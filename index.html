@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MatchPulse - Live Game Updates</title>
   <meta name="description" content="Live football scores, match status, lineups, coaches, players, stadia, fixtures, venues, and broadcast details." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta property="og:title" content="MatchPulse - Live Football Scores" />
+  <meta property="og:description" content="Compact live football scores with leagues, teams, lineups, coaches, players, and stadia." />
+  <meta property="og:url" content="https://andrew-ogama.github.io/matchpulse-live-scores/" />
+  <meta name="twitter:card" content="summary" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -2269,6 +2274,827 @@
       background: rgba(255, 157, 170, 0.08);
       color: #ffd9df;
     }
+
+    /* Compact scores-app layout */
+    :root {
+      --page: #f2f5f9;
+      --surface: #ffffff;
+      --surface-2: #f7f9fc;
+      --surface-3: #edf2f8;
+      --line: #dfe6f1;
+      --text: #142033;
+      --muted: #657489;
+      --soft: #2f3d52;
+      --blue: #2f6ff6;
+      --blue-2: #dbeafe;
+      --red: #e84d62;
+      --red-2: #ffe1e6;
+      --green: #2f6ff6;
+      --cyan: #6ea0ff;
+      --amber: #f0848f;
+      --shadow: 0 12px 28px rgba(20, 32, 51, 0.08);
+    }
+
+    html,
+    body {
+      background: var(--page);
+      color: var(--text);
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(242, 245, 249, 0) 270px),
+        var(--page);
+    }
+
+    .app::before {
+      display: none;
+    }
+
+    .topbar {
+      border-bottom-color: var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 8px 22px rgba(20, 32, 51, 0.06);
+    }
+
+    .topbar-inner,
+    main {
+      width: min(1180px, calc(100% - 28px));
+    }
+
+    .topbar-inner {
+      min-height: 66px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, var(--blue), var(--red)),
+        var(--blue);
+      border: 0;
+      box-shadow: none;
+      font-size: 13px;
+    }
+
+    .brand h1 {
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    .brand p {
+      color: var(--muted);
+    }
+
+    .connection,
+    .button,
+    .control,
+    .search,
+    .icon-button,
+    .today-button,
+    .segment,
+    .status-pill {
+      color: var(--soft);
+      border-color: var(--line);
+      background: var(--surface);
+      box-shadow: none;
+    }
+
+    .button.primary,
+    .segment.is-active,
+    .status-pill.live {
+      color: var(--red);
+      background: var(--red-2);
+      border-color: rgba(232, 77, 98, 0.24);
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible,
+    .segment.is-active:hover,
+    .segment.is-active:focus-visible {
+      color: #c83549;
+      background: #ffd5dc;
+      border-color: rgba(232, 77, 98, 0.34);
+    }
+
+    .dot.online {
+      background: var(--red);
+      box-shadow: 0 0 0 4px rgba(232, 77, 98, 0.12);
+    }
+
+    .dot.offline {
+      background: var(--muted);
+      box-shadow: 0 0 0 4px rgba(101, 116, 137, 0.12);
+    }
+
+    main {
+      padding-top: 14px;
+    }
+
+    .scoreboard-shell {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 16px;
+    }
+
+    .sports-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+
+    .sport-pill {
+      min-height: 38px;
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--soft);
+      padding: 0 13px;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 8px 18px rgba(20, 32, 51, 0.045);
+    }
+
+    .sport-pill.is-active {
+      color: #fff;
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .league-board {
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .league-tile {
+      min-height: 70px;
+      padding: 10px;
+      background: var(--surface);
+      border-color: var(--line);
+      box-shadow: 0 8px 18px rgba(20, 32, 51, 0.045);
+    }
+
+    .league-tile:hover,
+    .league-tile:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(47, 111, 246, 0.28);
+      box-shadow: 0 12px 24px rgba(20, 32, 51, 0.08);
+    }
+
+    .league-tile.is-active {
+      border-color: rgba(232, 77, 98, 0.28);
+      background:
+        linear-gradient(135deg, rgba(232, 77, 98, 0.08), rgba(47, 111, 246, 0.05)),
+        #fff;
+      box-shadow: inset 3px 0 0 var(--red), 0 10px 22px rgba(20, 32, 51, 0.055);
+    }
+
+    .league-tile strong {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .league-tile span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .league-tile.is-active span {
+      color: var(--muted);
+    }
+
+    .league-count {
+      color: var(--blue);
+      background: var(--blue-2);
+      font-size: 10px;
+    }
+
+    .toolbar,
+    .panel,
+    .match-card,
+    .stat {
+      border-color: var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar {
+      margin-bottom: 14px;
+    }
+
+    .toolbar::before,
+    .stat::after {
+      opacity: 0;
+    }
+
+    .toolbar-row {
+      grid-template-columns: minmax(170px, 1fr) 150px auto minmax(160px, 0.9fr);
+      padding: 12px;
+      border-bottom-color: var(--line);
+    }
+
+    .field span,
+    .stat span,
+    .detail span,
+    .stadium-card span,
+    .player-section span,
+    .live-card span {
+      color: var(--muted);
+    }
+
+    .segmented {
+      padding: 10px 12px;
+      gap: 7px;
+    }
+
+    .segment {
+      min-height: 32px;
+      min-width: 78px;
+      font-size: 12px;
+    }
+
+    .headline {
+      margin-bottom: 12px;
+    }
+
+    .headline h2 {
+      color: var(--text);
+      font-size: 24px;
+    }
+
+    .headline p {
+      color: var(--muted);
+    }
+
+    .stats {
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      min-height: 70px;
+      padding: 12px;
+    }
+
+    .stat strong {
+      color: var(--text);
+      font-size: 24px;
+    }
+
+    .match-grid {
+      gap: 10px;
+    }
+
+    .match-card {
+      overflow: hidden;
+    }
+
+    .match-card:hover {
+      border-color: rgba(47, 111, 246, 0.22);
+      transform: none;
+    }
+
+    .match-card.is-live {
+      border-color: rgba(232, 77, 98, 0.28);
+    }
+
+    .match-card.is-live::before {
+      width: 3px;
+      background: var(--red);
+      box-shadow: none;
+    }
+
+    .match-top {
+      min-height: 40px;
+      padding: 9px 12px;
+      border-bottom-color: var(--line);
+      background: var(--surface-2);
+    }
+
+    .league-label {
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .status-pill {
+      min-width: 70px;
+      min-height: 24px;
+      font-size: 11px;
+      border-radius: 999px;
+    }
+
+    .status-pill.upcoming {
+      color: var(--blue);
+      background: var(--blue-2);
+      border-color: transparent;
+    }
+
+    .status-pill.final {
+      color: var(--muted);
+      background: var(--surface-3);
+      border-color: transparent;
+    }
+
+    .match-body {
+      grid-template-columns: minmax(0, 1fr) 104px minmax(0, 1fr);
+      gap: 10px;
+      padding: 13px 14px;
+    }
+
+    .team {
+      grid-template-columns: 38px minmax(0, 1fr);
+      align-items: center;
+      gap: 9px;
+    }
+
+    .team.away {
+      grid-template-columns: minmax(0, 1fr) 38px;
+      justify-items: stretch;
+    }
+
+    .team.away .team-logo-wrap {
+      order: 2;
+    }
+
+    .team.away > div:not(.team-logo-wrap) {
+      order: 1;
+      text-align: right;
+    }
+
+    .team-logo-wrap {
+      width: 38px;
+      height: 38px;
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
+
+    .team-name {
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .team-meta {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .score-block {
+      min-height: 60px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--surface-2);
+    }
+
+    .score {
+      min-width: auto;
+      color: var(--text);
+      font-size: 28px;
+    }
+
+    .clock {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .match-footer {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 0 14px 12px;
+    }
+
+    .detail {
+      min-height: 42px;
+      background: var(--surface-2);
+      border-color: var(--line);
+      padding: 7px 9px;
+    }
+
+    .detail strong {
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .match-drawer {
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .match-drawer summary {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 14px;
+      color: var(--soft);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      list-style: none;
+    }
+
+    .match-drawer summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .match-drawer summary::after {
+      content: "+";
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--red);
+      background: var(--red-2);
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .match-drawer[open] summary::after {
+      content: "-";
+    }
+
+    .match-intel {
+      padding: 0 14px 14px;
+    }
+
+    .stadium-card,
+    .team-sheet {
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
+
+    .stadium-card strong,
+    .sheet-head strong,
+    .player-chip {
+      color: var(--text);
+    }
+
+    .stadium-card small,
+    .sheet-head em {
+      color: var(--muted);
+    }
+
+    .stadium-badge {
+      color: var(--red);
+      background: var(--red-2);
+      border: 0;
+    }
+
+    .player-chip {
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .side-panel {
+      top: 82px;
+      gap: 12px;
+    }
+
+    .panel-head {
+      min-height: 44px;
+      border-bottom-color: var(--line);
+    }
+
+    .panel-head h3 {
+      color: var(--text);
+    }
+
+    .panel-body {
+      padding: 12px;
+    }
+
+    .team-filter {
+      color: var(--soft);
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
+
+    .team-filter:hover,
+    .team-filter:focus-visible {
+      border-color: rgba(47, 111, 246, 0.26);
+      background: var(--blue-2);
+    }
+
+    .team-filter.is-active {
+      color: var(--red);
+      background: var(--red-2);
+      border-color: rgba(232, 77, 98, 0.24);
+    }
+
+    .team-filter-logo,
+    .watch-score {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--line);
+    }
+
+    .watch-item {
+      border-bottom-color: var(--line);
+    }
+
+    .watch-item strong,
+    .update-text strong,
+    .empty strong {
+      color: var(--text);
+    }
+
+    .watch-item span,
+    .update-text span,
+    .source,
+    .empty {
+      color: var(--muted);
+    }
+
+    .live-card {
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
+
+    .live-card strong {
+      color: var(--text);
+    }
+
+    .pulse-track {
+      background: #e7edf6;
+    }
+
+    .pulse-track span {
+      background: linear-gradient(90deg, var(--red), var(--blue));
+    }
+
+    .source a {
+      color: var(--blue);
+    }
+
+    .notice {
+      color: #a23c4b;
+      background: var(--red-2);
+      border-color: rgba(232, 77, 98, 0.2);
+    }
+
+    .empty {
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 1100px) {
+      .scoreboard-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        position: static;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        padding: 10px 0;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .toolbar-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .match-body {
+        grid-template-columns: minmax(0, 1fr) 92px minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .team,
+      .team.away {
+        grid-template-columns: 34px minmax(0, 1fr);
+        justify-items: stretch;
+        text-align: left;
+      }
+
+      .team.away {
+        grid-template-columns: minmax(0, 1fr) 34px;
+      }
+
+      .team.away .team-logo-wrap {
+        order: 2;
+      }
+
+      .score-block {
+        min-height: 58px;
+      }
+
+      .team-logo-wrap {
+        width: 34px;
+        height: 34px;
+      }
+
+      .team-name {
+        font-size: 14px;
+      }
+
+      .lineup-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 580px) {
+      body {
+        padding-bottom: 74px;
+      }
+
+      .topbar-inner,
+      main {
+        width: min(100% - 18px, 1180px);
+      }
+
+      .brand h1 {
+        font-size: 20px;
+      }
+
+      .top-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+      }
+
+      .top-actions .connection {
+        min-width: 0;
+      }
+
+      .button.primary {
+        min-width: 92px;
+      }
+
+      .sports-strip {
+        margin-left: -1px;
+        margin-right: -1px;
+      }
+
+      .league-board {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scroll-snap-type: x mandatory;
+      }
+
+      .league-tile {
+        flex: 0 0 138px;
+        scroll-snap-align: start;
+      }
+
+      .toolbar-row {
+        grid-template-columns: 1fr;
+      }
+
+      .date-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .date-actions > * {
+        width: 100%;
+      }
+
+      .segmented {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .segment {
+        flex: 0 0 auto;
+      }
+
+      .headline {
+        gap: 10px;
+      }
+
+      .headline h2 {
+        font-size: 21px;
+      }
+
+      .headline .connection {
+        width: 100%;
+      }
+
+      .stats {
+        grid-template-columns: repeat(4, minmax(104px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .stat {
+        min-width: 104px;
+      }
+
+      .match-body {
+        grid-template-columns: minmax(0, 1fr) 78px minmax(0, 1fr);
+        padding: 12px 10px;
+      }
+
+      .team,
+      .team.away {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .team.away .team-logo-wrap,
+      .team.away > div:not(.team-logo-wrap) {
+        order: initial;
+        text-align: center;
+      }
+
+      .team-logo-wrap {
+        width: 32px;
+        height: 32px;
+      }
+
+      .team-name {
+        font-size: 13px;
+      }
+
+      .team-meta {
+        display: none;
+      }
+
+      .score {
+        font-size: 24px;
+      }
+
+      .clock {
+        font-size: 11px;
+      }
+
+      .match-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .stadium-card {
+        grid-template-columns: 1fr;
+      }
+
+      .stadium-badge {
+        width: fit-content;
+      }
+
+      .side-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        z-index: 60;
+        min-height: 58px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.96);
+        padding: 6px;
+        box-shadow: 0 16px 34px rgba(20, 32, 51, 0.18);
+        backdrop-filter: blur(14px);
+      }
+
+      .mobile-nav a {
+        display: grid;
+        place-items: center;
+        gap: 2px;
+        border-radius: 14px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .mobile-nav a:first-child {
+        color: #fff;
+        background: var(--red);
+      }
+
+      .mobile-nav span {
+        font-size: 16px;
+        line-height: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2295,6 +3121,13 @@
     <main>
       <div class="scoreboard-shell">
         <section aria-label="Live scoreboard">
+          <nav class="sports-strip" aria-label="Score navigation">
+            <a class="sport-pill is-active" href="#matchGrid">Football</a>
+            <a class="sport-pill" href="#leagueBoard">Leagues</a>
+            <a class="sport-pill" href="#teamList">Teams</a>
+            <a class="sport-pill" href="#updateLog">Live Log</a>
+          </nav>
+
           <div class="league-board" id="leagueBoard" aria-label="League quick view"></div>
 
           <div class="toolbar">
@@ -2419,6 +3252,12 @@
       </div>
     </main>
   </div>
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <a href="#matchGrid"><span aria-hidden="true">&#9679;</span>Scores</a>
+    <a href="#leagueBoard"><span aria-hidden="true">&#9638;</span>Leagues</a>
+    <a href="#teamList"><span aria-hidden="true">&#9675;</span>Teams</a>
+    <a href="#updateLog"><span aria-hidden="true">&#8635;</span>Live</a>
+  </nav>
 
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
@@ -3079,13 +3918,16 @@
               <strong title="${escapeAttr(event.note || event.statusDetail)}">${escapeHtml(event.note || event.statusDetail)}</strong>
             </div>
           </div>
-          <div class="match-intel">
-            ${stadiumMarkup(event)}
-            <div class="lineup-grid">
-              ${teamSheetMarkup(event.home)}
-              ${teamSheetMarkup(event.away)}
+          <details class="match-drawer">
+            <summary>Lineups, coaches, players and stadia</summary>
+            <div class="match-intel">
+              ${stadiumMarkup(event)}
+              <div class="lineup-grid">
+                ${teamSheetMarkup(event.home)}
+                ${teamSheetMarkup(event.away)}
+              </div>
             </div>
-          </div>
+          </details>
         </article>
       `;
     }
@@ -3137,7 +3979,7 @@
 
     function teamMarkup(team, label, isAway = false) {
       return `
-        <div class="team ${isAway ? "away" : ""}">
+        <div class="team ${isAway ? "away" : ""} ${team.winner ? "is-winner" : ""}">
           ${teamLogoMarkup(team)}
           <div>
             <div class="team-name">${escapeHtml(team.name)}</div>
