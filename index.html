@@ -4359,6 +4359,41 @@
         grid-column: auto;
       }
 
+      .control,
+      .search,
+      .icon-button,
+      .today-button,
+      .segment {
+        color: var(--soft);
+        border-color: var(--line);
+        background: var(--surface-2);
+      }
+
+      .control:hover,
+      .control:focus,
+      .search:hover,
+      .search:focus,
+      .icon-button:hover,
+      .icon-button:focus-visible,
+      .today-button:hover,
+      .today-button:focus-visible,
+      .segment:hover,
+      .segment:focus-visible {
+        color: var(--text);
+        border-color: rgba(61, 123, 255, 0.32);
+        background: var(--blue-2);
+        box-shadow: 0 0 0 3px rgba(61, 123, 255, 0.12);
+      }
+
+      .segment.is-active,
+      .segment.is-active:hover,
+      .segment.is-active:focus-visible {
+        color: #fff;
+        border-color: var(--red);
+        background: var(--red);
+        box-shadow: 0 8px 18px rgba(255, 63, 79, 0.18);
+      }
+
       .segmented,
       .stats {
         overflow-x: auto;
