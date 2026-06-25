@@ -2410,6 +2410,37 @@
       border-color: rgba(232, 77, 98, 0.34);
     }
 
+    .control:hover,
+    .search:hover,
+    .icon-button:hover,
+    .icon-button:focus-visible,
+    .today-button:hover,
+    .today-button:focus-visible,
+    .segment:hover,
+    .segment:focus-visible {
+      color: var(--text);
+      border-color: rgba(47, 111, 246, 0.26);
+      background: var(--blue-2);
+      box-shadow: 0 0 0 3px rgba(47, 111, 246, 0.1);
+    }
+
+    .control:focus,
+    .search:focus {
+      color: var(--text);
+      border-color: rgba(47, 111, 246, 0.34);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(47, 111, 246, 0.12);
+    }
+
+    .segment.is-active,
+    .segment.is-active:hover,
+    .segment.is-active:focus-visible {
+      color: var(--red);
+      border-color: rgba(232, 77, 98, 0.24);
+      background: var(--red-2);
+      box-shadow: none;
+    }
+
     .dot.online {
       background: var(--red);
       box-shadow: 0 0 0 4px rgba(232, 77, 98, 0.12);
