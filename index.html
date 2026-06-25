@@ -5,17 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MatchPulse - Live Game Updates</title>
   <meta name="description" content="Live football scores, match status, lineups, coaches, players, stadia, fixtures, venues, and broadcast details." />
-  <meta name="theme-color" content="#246bfe" />
-  <meta name="application-name" content="MatchPulse" />
-  <link rel="canonical" href="https://andrew-ogama.github.io/matchpulse-live-scores/" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23090b0f'/%3E%3Cpath d='M10 46V18h10l12 16 12-16h10v28H43V34L32 48 21 34v12H10z' fill='%2358a6ff'/%3E%3Cpath d='M44 18h10v28H44z' fill='%23f23b55'/%3E%3C/svg%3E" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="MatchPulse - Live Football Scores" />
-  <meta property="og:description" content="Follow live football scores, fixtures, lineups, coaches, players, stadia, venues, and broadcast details." />
-  <meta property="og:url" content="https://andrew-ogama.github.io/matchpulse-live-scores/" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="MatchPulse - Live Football Scores" />
-  <meta name="twitter:description" content="Live football scores with match details, lineups, coaches, players, stadia, and countdown pulse." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -2097,266 +2086,6 @@
         padding: 11px;
       }
     }
-
-    /* Share-ready polish */
-    ::selection {
-      color: #fff;
-      background: rgba(242, 59, 85, 0.75);
-    }
-
-    .top-actions {
-      gap: 10px;
-    }
-
-    .button.share-button {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(148, 163, 184, 0.22);
-    }
-
-    .button.share-button:hover,
-    .button.share-button:focus-visible {
-      background: rgba(36, 107, 254, 0.18);
-      border-color: rgba(88, 166, 255, 0.5);
-    }
-
-    .button-icon {
-      line-height: 1;
-      font-size: 15px;
-    }
-
-    .share-toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 50;
-      min-height: 44px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(135deg, rgba(36, 107, 254, 0.95), rgba(242, 59, 85, 0.95)),
-        #111827;
-      color: #fff;
-      padding: 11px 15px;
-      font-size: 13px;
-      font-weight: 900;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(12px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
-    }
-
-    .share-toast.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .league-board {
-      grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-    }
-
-    .league-tile {
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
-    }
-
-    .league-tile::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: radial-gradient(circle at top right, rgba(88, 166, 255, 0.18), transparent 36%);
-      opacity: 0.8;
-    }
-
-    .league-tile::after {
-      content: "";
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(148, 163, 184, 0.42);
-    }
-
-    .league-tile.is-active::after {
-      background: #fff;
-      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.16);
-    }
-
-    .headline .connection {
-      flex: 0 0 auto;
-    }
-
-    .stat {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 85% 18%, rgba(88, 166, 255, 0.12), transparent 32%);
-      pointer-events: none;
-    }
-
-    .status-pill.upcoming {
-      color: #dceafe;
-      border-color: rgba(88, 166, 255, 0.34);
-      background: rgba(36, 107, 254, 0.14);
-    }
-
-    .status-pill.final {
-      color: #f8d7dd;
-      border-color: rgba(242, 59, 85, 0.32);
-      background: rgba(242, 59, 85, 0.13);
-    }
-
-    .match-card {
-      position: relative;
-    }
-
-    .match-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), transparent 26%);
-    }
-
-    .match-card > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .team.is-winner .team-logo-wrap {
-      border-color: rgba(255, 255, 255, 0.42);
-      box-shadow: 0 0 0 4px rgba(36, 107, 254, 0.16);
-    }
-
-    .team.is-winner .team-name::after {
-      content: "Winner";
-      display: inline-flex;
-      align-items: center;
-      min-height: 20px;
-      margin-left: 8px;
-      border-radius: 999px;
-      padding: 0 7px;
-      color: #fff;
-      background: linear-gradient(135deg, var(--blue), var(--red));
-      font-size: 10px;
-      font-weight: 900;
-      vertical-align: middle;
-    }
-
-    .detail strong {
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .match-intel {
-      border-top: 1px solid rgba(148, 163, 184, 0.14);
-      padding-top: 16px;
-    }
-
-    .stadium-card,
-    .team-sheet,
-    .panel {
-      backdrop-filter: blur(10px);
-    }
-
-    .source {
-      margin: 12px 0 0;
-    }
-
-    .source.public-link {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(148, 163, 184, 0.14);
-    }
-
-    .empty {
-      background:
-        linear-gradient(135deg, rgba(36, 107, 254, 0.08), rgba(242, 59, 85, 0.05)),
-        rgba(255, 255, 255, 0.025);
-    }
-
-    @media (max-width: 860px) {
-      .top-actions .button {
-        min-width: 118px;
-      }
-    }
-
-    @media (max-width: 580px) {
-      .top-actions {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
-
-      .top-actions .connection {
-        grid-column: 1 / -1;
-      }
-
-      .top-actions .button {
-        width: 100%;
-        min-width: 0;
-      }
-
-      .toolbar-row {
-        grid-template-columns: 1fr;
-      }
-
-      .date-actions {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .date-actions > * {
-        width: 100%;
-      }
-
-      .league-board {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 5px;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: thin;
-      }
-
-      .league-tile {
-        flex: 0 0 164px;
-        scroll-snap-align: start;
-      }
-
-      .stats {
-        grid-template-columns: repeat(4, minmax(112px, 1fr));
-        overflow-x: auto;
-        padding-bottom: 5px;
-        scrollbar-width: thin;
-      }
-
-      .stat {
-        min-width: 112px;
-      }
-
-      .score {
-        font-size: 38px;
-      }
-
-      .team.is-winner .team-name::after {
-        margin-left: 0;
-        margin-top: 4px;
-      }
-
-      .share-toast {
-        left: 10px;
-        right: 10px;
-        bottom: 14px;
-        text-align: center;
-      }
-    }
   </style>
 </head>
 <body>
@@ -2376,7 +2105,6 @@
             <span id="connectionText">Connecting to live feed</span>
           </div>
           <button class="button primary" id="refreshButton" type="button"><span class="button-icon" aria-hidden="true">&#8635;</span><span>Refresh</span></button>
-          <button class="button share-button" id="shareButton" type="button"><span class="button-icon" aria-hidden="true">&#8599;</span><span>Share</span></button>
         </div>
       </div>
     </header>
@@ -2502,21 +2230,15 @@
                 Scores and match details come from the
                 <a id="sourceLink" href="https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard" target="_blank" rel="noreferrer">ESPN scoreboard feed</a>.
               </p>
-              <p class="source public-link">
-                Public page:
-                <a href="https://andrew-ogama.github.io/matchpulse-live-scores/" target="_blank" rel="noreferrer">matchpulse-live-scores</a>.
-              </p>
             </div>
           </div>
         </aside>
       </div>
     </main>
   </div>
-  <div class="share-toast" id="shareToast" role="status" aria-live="polite">Link copied</div>
 
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
-    const PUBLIC_URL = "https://andrew-ogama.github.io/matchpulse-live-scores/";
     const REFRESH_MS = 30000;
     const LEAGUES = [
       { id: "all-soccer", label: "Top soccer live", sport: "soccer", slug: "all", sourceName: "Top soccer", all: true },
@@ -2573,9 +2295,7 @@
       sideCountdownFill: document.getElementById("sideCountdownFill"),
       connectionDot: document.getElementById("connectionDot"),
       connectionText: document.getElementById("connectionText"),
-      sourceLink: document.getElementById("sourceLink"),
-      shareButton: document.getElementById("shareButton"),
-      shareToast: document.getElementById("shareToast")
+      sourceLink: document.getElementById("sourceLink")
     };
 
     init();
@@ -2643,7 +2363,6 @@
       });
 
       els.refreshButton.addEventListener("click", () => loadScores({ reason: "Manual refresh" }));
-      els.shareButton.addEventListener("click", shareSite);
     }
 
     function selectLeague(leagueId) {
@@ -3040,7 +2759,7 @@
         const isActive = league.id === state.leagueId;
         const count = counts[league.id] || 0;
         const meta = league.all ? "All soccer" : league.sourceName;
-        const countText = count ? `${count} ${count === 1 ? "game" : "games"}` : "Open";
+        const countText = count ? `${count} games` : "Open";
 
         return `
           <button class="league-tile ${isActive ? "is-active" : ""}" type="button" data-league-id="${escapeAttr(league.id)}" aria-pressed="${isActive}">
@@ -3235,7 +2954,7 @@
 
     function teamMarkup(team, label, isAway = false) {
       return `
-        <div class="team ${isAway ? "away" : ""} ${team.winner ? "is-winner" : ""}">
+        <div class="team ${isAway ? "away" : ""}">
           ${teamLogoMarkup(team)}
           <div>
             <div class="team-name">${escapeHtml(team.name)}</div>
@@ -3377,62 +3096,6 @@
         time: formatTime(new Date())
       });
       state.updateLog = state.updateLog.slice(0, 12);
-    }
-
-    async function shareSite() {
-      const shareData = {
-        title: "MatchPulse",
-        text: "Live football scores, match details, lineups, coaches, players, and stadia.",
-        url: PUBLIC_URL
-      };
-
-      try {
-        if (navigator.share) {
-          await navigator.share(shareData);
-          showShareToast("Ready to share");
-          return;
-        }
-
-        await copyText(PUBLIC_URL);
-        showShareToast("Link copied");
-      } catch (error) {
-        if (error && error.name === "AbortError") return;
-
-        try {
-          await copyText(PUBLIC_URL);
-          showShareToast("Link copied");
-        } catch (copyError) {
-          showShareToast(PUBLIC_URL);
-        }
-      }
-    }
-
-    async function copyText(text) {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-        return;
-      }
-
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.setAttribute("readonly", "");
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      textarea.remove();
-    }
-
-    let shareToastTimer;
-
-    function showShareToast(message) {
-      els.shareToast.textContent = message;
-      els.shareToast.classList.add("is-visible");
-      window.clearTimeout(shareToastTimer);
-      shareToastTimer = window.setTimeout(() => {
-        els.shareToast.classList.remove("is-visible");
-      }, 2400);
     }
 
     function changeDateBy(days) {
