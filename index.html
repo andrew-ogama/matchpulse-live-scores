@@ -4855,6 +4855,155 @@
         scroll-margin-top: 132px;
       }
     }
+
+    /* Mobile scores-first layout */
+    @media (max-width: 580px) {
+      html {
+        scroll-padding-top: 76px;
+      }
+
+      .topbar {
+        min-height: 64px;
+      }
+
+      .topbar-inner {
+        min-height: 64px;
+      }
+
+      main {
+        width: min(100% - 14px, 430px);
+        padding-top: 8px;
+      }
+
+      .sports-strip {
+        display: none;
+      }
+
+      .league-board {
+        position: static;
+        display: flex;
+        gap: 7px;
+        min-height: 38px;
+        margin: 0 0 8px;
+        padding: 0 0 6px;
+        background: transparent;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .league-board::-webkit-scrollbar {
+        display: none;
+      }
+
+      .league-tile {
+        flex: 0 0 auto;
+        min-height: 34px;
+        min-width: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: none;
+        scroll-snap-align: start;
+      }
+
+      .league-tile strong {
+        font-size: 12px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .league-tile span,
+      .league-count {
+        display: none;
+      }
+
+      .league-tile.is-active {
+        color: #fff;
+        border-color: var(--red);
+        background: var(--red);
+        box-shadow: none;
+      }
+
+      .league-tile.is-active strong {
+        color: #fff;
+      }
+
+      .toolbar {
+        margin: 0 0 10px;
+        border-radius: 8px;
+      }
+
+      .toolbar-row {
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .field {
+        gap: 5px;
+      }
+
+      .field span {
+        font-size: 9px;
+      }
+
+      .control,
+      .search {
+        min-height: 40px;
+        height: 40px;
+      }
+
+      .date-actions {
+        grid-template-columns: 40px 40px 1fr;
+      }
+
+      .icon-button,
+      .today-button {
+        min-height: 40px;
+        height: 40px;
+      }
+
+      .segmented {
+        padding: 0 10px 10px;
+      }
+
+      .headline {
+        margin: 8px 0;
+      }
+
+      .headline h2 {
+        font-size: 20px;
+      }
+
+      .stats {
+        display: none;
+      }
+
+      .latest-card {
+        display: none;
+      }
+
+      .match-grid {
+        gap: 10px;
+      }
+
+      .mobile-nav {
+        display: grid;
+      }
+
+      #matchGrid,
+      #leagueBoard,
+      #teamList,
+      #updateLog {
+        scroll-margin-top: 76px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -5665,6 +5814,17 @@
           </button>
         `;
       }).join("");
+      alignActiveLeagueTile();
+    }
+
+    function alignActiveLeagueTile() {
+      const activeTile = els.leagueBoard.querySelector(".league-tile.is-active");
+      if (!activeTile) return;
+
+      window.requestAnimationFrame(() => {
+        const left = activeTile.offsetLeft - els.leagueBoard.offsetLeft;
+        els.leagueBoard.scrollTo({ left: Math.max(0, left - 8), behavior: "auto" });
+      });
     }
 
     function renderTeams(events) {
