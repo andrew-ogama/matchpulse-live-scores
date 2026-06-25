@@ -4283,6 +4283,116 @@
         scroll-margin-top: 128px;
       }
     }
+
+    /* Final mobile polish: tight top stack and native swipe rows */
+    @media (max-width: 580px) {
+      html {
+        scroll-padding-top: 116px;
+      }
+
+      body {
+        background: var(--page);
+      }
+
+      .topbar {
+        min-height: 64px;
+      }
+
+      .topbar-inner {
+        min-height: 64px;
+        padding: 0;
+      }
+
+      main {
+        width: min(100% - 16px, 430px);
+        padding-top: 8px;
+      }
+
+      .scoreboard-shell {
+        gap: 10px;
+      }
+
+      .sports-strip {
+        display: none;
+      }
+
+      .league-board {
+        position: sticky;
+        top: 64px;
+        z-index: 19;
+        display: flex;
+        gap: 8px;
+        min-height: 84px;
+        margin: 0 -8px 8px;
+        padding: 8px 8px 10px;
+        background: linear-gradient(180deg, var(--page) 0%, rgba(244, 245, 248, 0.94) 100%);
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 63, 79, 0.45) transparent;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .league-tile {
+        flex: 0 0 112px;
+        min-height: 70px;
+      }
+
+      .toolbar {
+        position: static;
+        top: auto;
+        margin: 0 0 8px;
+        border-radius: 12px;
+      }
+
+      .toolbar-row {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 8px;
+      }
+
+      .toolbar-row .field:first-child {
+        display: none;
+      }
+
+      .toolbar-row .field:nth-child(4) {
+        grid-column: auto;
+      }
+
+      .segmented,
+      .stats {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .headline {
+        margin: 8px 0;
+      }
+
+      .latest-card {
+        margin-bottom: 8px;
+      }
+
+      .loading-card {
+        min-height: 86px;
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      .loading-title {
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      #matchGrid,
+      #leagueBoard,
+      #teamList,
+      #updateLog {
+        scroll-margin-top: 116px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -4459,8 +4569,8 @@
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
     const REFRESH_MS = 30000;
-    const SCORE_TIMEOUT_MS = 6500;
-    const DETAIL_TIMEOUT_MS = 4200;
+    const SCORE_TIMEOUT_MS = 4500;
+    const DETAIL_TIMEOUT_MS = 3200;
     const LEAGUES = [
       { id: "all-soccer", label: "Top soccer live", sport: "soccer", slug: "all", sourceName: "Top soccer", all: true },
       { id: "world-cup", label: "FIFA World Cup 2026", sport: "soccer", slug: "fifa.world", sourceName: "FIFA World Cup" },
@@ -5031,6 +5141,7 @@
     function renderLoading() {
       els.matchGrid.innerHTML = `
         <div class="loading-card" role="status" aria-live="polite">
+          <strong class="loading-title">Loading live games</strong>
           <div class="loading-line short"></div>
           <div class="loading-line soft"></div>
           <div class="loading-line soft"></div>
