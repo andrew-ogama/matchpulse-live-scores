@@ -2086,6 +2086,189 @@
         padding: 11px;
       }
     }
+
+    /* Secondary color correction */
+    :root {
+      --page: #0b1017;
+      --surface: rgba(19, 26, 36, 0.92);
+      --surface-2: #182231;
+      --surface-3: #101722;
+      --line: rgba(158, 173, 195, 0.2);
+      --text: #f5f8fc;
+      --muted: #a9b5c6;
+      --soft: #dde6f2;
+      --blue: #4d8dff;
+      --blue-2: #9bbcff;
+      --red: #e75f72;
+      --red-2: #ff9daa;
+      --green: var(--blue-2);
+      --cyan: var(--blue-2);
+      --amber: var(--red-2);
+      --shadow: 0 18px 46px rgba(0, 0, 0, 0.24);
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(155, 188, 255, 0.085), transparent 300px),
+        linear-gradient(135deg, transparent 18%, rgba(255, 157, 170, 0.045), transparent 54%),
+        var(--page);
+    }
+
+    .app::before,
+    .toolbar::before,
+    .stat::after {
+      background: linear-gradient(90deg, rgba(155, 188, 255, 0.86), rgba(255, 157, 170, 0.76));
+    }
+
+    .topbar {
+      background: rgba(11, 16, 23, 0.9);
+    }
+
+    .brand-mark {
+      color: #f7fbff;
+      background:
+        linear-gradient(145deg, rgba(155, 188, 255, 0.28), rgba(255, 157, 170, 0.18)),
+        #121b28;
+      border-color: rgba(155, 188, 255, 0.28);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+    }
+
+    .button.primary,
+    .segment.is-active,
+    .status-pill.live {
+      color: #f8fbff;
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.22), rgba(255, 157, 170, 0.13)),
+        #172233;
+      border-color: rgba(155, 188, 255, 0.38);
+      box-shadow: none;
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible,
+    .segment.is-active:hover,
+    .segment.is-active:focus-visible {
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.3), rgba(255, 157, 170, 0.16)),
+        #1a2637;
+      border-color: rgba(155, 188, 255, 0.52);
+    }
+
+    .dot.online {
+      background: var(--blue-2);
+      box-shadow: 0 0 0 4px rgba(155, 188, 255, 0.14);
+    }
+
+    .dot.offline {
+      background: var(--red-2);
+      box-shadow: 0 0 0 4px rgba(255, 157, 170, 0.14);
+    }
+
+    .control:focus,
+    .search:focus {
+      border-color: rgba(155, 188, 255, 0.78);
+      box-shadow: 0 0 0 3px rgba(155, 188, 255, 0.12);
+    }
+
+    .league-tile {
+      border-color: rgba(158, 173, 195, 0.18);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+        #121a26;
+      box-shadow: none;
+    }
+
+    .league-tile:hover,
+    .league-tile:focus-visible {
+      border-color: rgba(155, 188, 255, 0.45);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+    }
+
+    .league-tile.is-active {
+      border-color: rgba(155, 188, 255, 0.55);
+      background:
+        linear-gradient(145deg, rgba(155, 188, 255, 0.2), rgba(255, 157, 170, 0.08)),
+        #142033;
+      box-shadow: inset 4px 0 0 rgba(155, 188, 255, 0.9);
+    }
+
+    .league-count {
+      background: rgba(155, 188, 255, 0.12);
+      color: #dfe9ff;
+    }
+
+    .team-filter:hover,
+    .team-filter:focus-visible {
+      border-color: rgba(155, 188, 255, 0.45);
+      background: rgba(155, 188, 255, 0.1);
+    }
+
+    .team-filter.is-active {
+      color: #f8fbff;
+      border-color: rgba(155, 188, 255, 0.48);
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.24), rgba(255, 157, 170, 0.12)),
+        #172233;
+    }
+
+    .match-card.is-live {
+      border-color: rgba(155, 188, 255, 0.54);
+    }
+
+    .match-card.is-live::before {
+      background: linear-gradient(180deg, rgba(155, 188, 255, 0.95), rgba(255, 157, 170, 0.62));
+      box-shadow: 0 0 18px rgba(155, 188, 255, 0.25);
+    }
+
+    .score-block {
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.12), rgba(255, 157, 170, 0.055)),
+        #101722;
+    }
+
+    .status-pill {
+      background: #101722;
+    }
+
+    .status-pill.final {
+      color: #f3d4dc;
+      background: rgba(255, 157, 170, 0.1);
+      border-color: rgba(255, 157, 170, 0.28);
+    }
+
+    .status-pill.upcoming {
+      color: #dfe9ff;
+      background: rgba(155, 188, 255, 0.1);
+      border-color: rgba(155, 188, 255, 0.28);
+    }
+
+    .pulse-track {
+      background: rgba(155, 188, 255, 0.12);
+    }
+
+    .pulse-track span {
+      background: linear-gradient(90deg, rgba(155, 188, 255, 0.95), rgba(255, 157, 170, 0.82));
+    }
+
+    .live-card {
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.1), rgba(255, 157, 170, 0.055)),
+        #101722;
+    }
+
+    .stadium-badge {
+      color: #eef4ff;
+      background:
+        linear-gradient(135deg, rgba(155, 188, 255, 0.22), rgba(255, 157, 170, 0.12)),
+        #172233;
+      border: 1px solid rgba(155, 188, 255, 0.26);
+    }
+
+    .notice {
+      border-color: rgba(255, 157, 170, 0.26);
+      background: rgba(255, 157, 170, 0.08);
+      color: #ffd9df;
+    }
   </style>
 </head>
 <body>
