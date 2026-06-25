@@ -4087,6 +4087,65 @@
       }
     }
 
+    /* Mobile scrolling and faster perceived loading */
+    .sports-strip,
+    .league-board,
+    .segmented,
+    .stats {
+      scroll-snap-type: x proximity;
+    }
+
+    .sport-pill,
+    .league-tile,
+    .segment,
+    .stat {
+      scroll-snap-align: start;
+    }
+
+    @media (max-width: 580px) {
+      .sports-strip,
+      .league-board,
+      .segmented,
+      .stats {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        touch-action: pan-x pan-y;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 63, 79, 0.5) transparent;
+      }
+
+      .sports-strip::-webkit-scrollbar,
+      .league-board::-webkit-scrollbar,
+      .segmented::-webkit-scrollbar,
+      .stats::-webkit-scrollbar {
+        display: block;
+        height: 5px;
+      }
+
+      .sports-strip {
+        padding-right: 20px;
+      }
+
+      .league-board {
+        padding-right: 34px;
+        padding-bottom: 8px;
+      }
+
+      .segmented,
+      .stats {
+        padding-right: 26px;
+      }
+
+      .league-tile {
+        flex-basis: 112px;
+      }
+
+      .skeleton {
+        height: 132px;
+        border-radius: 14px;
+      }
+    }
+
     /* Sticky desktop navigation and visible horizontal scroll */
     html {
       scroll-behavior: smooth;
@@ -4380,7 +4439,8 @@
       nextRefreshAt: Date.now() + REFRESH_MS,
       snapshots: new Map(),
       updatedIds: new Set(),
-      updateLog: []
+      updateLog: [],
+      detailsRequestId: 0
     };
 
     const els = {
@@ -4500,7 +4560,7 @@
         let startLeft = 0;
 
         element.addEventListener("pointerdown", (event) => {
-          if (event.pointerType === "mouse" && event.button !== 0) return;
+          if (event.pointerType !== "mouse" || event.button !== 0) return;
           if (element.scrollWidth <= element.clientWidth + 2) return;
           isDragging = true;
           startX = event.clientX;
@@ -4538,6 +4598,8 @@
       if (state.loading) return;
       state.loading = true;
       setConnection("syncing", "Updating live feed");
+      const detailsRequestId = state.detailsRequestId + 1;
+      state.detailsRequestId = detailsRequestId;
 
       try {
         const league = getSelectedLeague();
@@ -4553,6 +4615,7 @@
         setConnection("online", "Live feed connected");
         addUpdate("Live sync", `${reason} - ${events.length} games loaded.`, "info");
         render();
+        hydrateMatchDetails(events, detailsRequestId);
       } catch (error) {
         state.usingFallback = true;
         state.events = fallbackEvents();
@@ -4586,8 +4649,7 @@
       }
       const payload = await response.json();
       const leagueInfo = payload.leagues && payload.leagues[0] ? payload.leagues[0] : {};
-      const events = (payload.events || []).map((event) => normalizeEvent(event, league, leagueInfo));
-      return enrichEvents(events);
+      return (payload.events || []).map((event) => normalizeEvent(event, league, leagueInfo));
     }
 
     function buildScoreboardUrl(league) {
@@ -4603,6 +4665,34 @@
           ? mergeEventDetails(event, result.value)
           : event;
       });
+    }
+
+    async function hydrateMatchDetails(events, requestId) {
+      const candidates = prioritizeDetailEvents(events).slice(0, state.leagueId === "all-soccer" ? 8 : 12);
+      if (!candidates.length) return;
+
+      try {
+        const enriched = await enrichEvents(candidates);
+        if (requestId !== state.detailsRequestId || state.usingFallback) return;
+        const byId = new Map(enriched.map((event) => [event.id, event]));
+
+        state.events = state.events.map((event) => byId.get(event.id) || event);
+        addUpdate("Match details", `${enriched.length} cards updated with lineups, coaches and stadia.`, "info");
+        render();
+      } catch (error) {
+        console.warn("Match detail hydration failed", error);
+      }
+    }
+
+    function prioritizeDetailEvents(events) {
+      const rank = { live: 0, upcoming: 1, final: 2 };
+      return [...events]
+        .filter((event) => event.id && event.leagueSlug)
+        .sort((a, b) => {
+          const rankDiff = rank[bucket(a)] - rank[bucket(b)];
+          if (rankDiff !== 0) return rankDiff;
+          return new Date(a.date) - new Date(b.date);
+        });
     }
 
     async function fetchEventDetails(event) {
