@@ -4086,6 +4086,101 @@
         font-size: 15px;
       }
     }
+
+    /* Sticky desktop navigation and visible horizontal scroll */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 150px;
+    }
+
+    .sports-strip {
+      position: sticky;
+      top: 82px;
+      z-index: 18;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 63, 79, 0.45) transparent;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .sports-strip::-webkit-scrollbar,
+    .league-board::-webkit-scrollbar,
+    .segmented::-webkit-scrollbar,
+    .stats::-webkit-scrollbar {
+      display: block;
+      height: 7px;
+    }
+
+    .sports-strip::-webkit-scrollbar-track,
+    .league-board::-webkit-scrollbar-track,
+    .segmented::-webkit-scrollbar-track,
+    .stats::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sports-strip::-webkit-scrollbar-thumb,
+    .league-board::-webkit-scrollbar-thumb,
+    .segmented::-webkit-scrollbar-thumb,
+    .stats::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255, 63, 79, 0.38);
+    }
+
+    .league-board,
+    .segmented,
+    .stats {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 63, 79, 0.38) transparent;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .league-board {
+      padding-bottom: 8px;
+    }
+
+    .sport-pill,
+    .segment,
+    .league-tile,
+    .stat {
+      user-select: none;
+    }
+
+    .is-dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
+    }
+
+    #matchGrid,
+    #leagueBoard,
+    #teamList,
+    #updateLog {
+      scroll-margin-top: 150px;
+    }
+
+    @media (max-width: 580px) {
+      html {
+        scroll-padding-top: 138px;
+      }
+
+      .sports-strip {
+        top: 64px;
+        z-index: 19;
+      }
+
+      .toolbar {
+        top: 118px;
+      }
+
+      #matchGrid,
+      #leagueBoard,
+      #teamList,
+      #updateLog {
+        scroll-margin-top: 138px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -4330,6 +4425,7 @@
       els.dateInput.value = state.date;
 
       bindEvents();
+      enableHorizontalScroll();
       renderLeagueBoard();
       renderLoading();
       loadScores({ reason: "Initial live feed" });
@@ -4385,6 +4481,46 @@
       });
 
       els.refreshButton.addEventListener("click", () => loadScores({ reason: "Manual refresh" }));
+    }
+
+    function enableHorizontalScroll() {
+      document.querySelectorAll(".sports-strip, .league-board, .segmented, .stats").forEach((element) => {
+        if (element.dataset.scrollEnhanced === "true") return;
+        element.dataset.scrollEnhanced = "true";
+
+        element.addEventListener("wheel", (event) => {
+          if (element.scrollWidth <= element.clientWidth + 2) return;
+          if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+          event.preventDefault();
+          element.scrollLeft += event.deltaY;
+        }, { passive: false });
+
+        let isDragging = false;
+        let startX = 0;
+        let startLeft = 0;
+
+        element.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          if (element.scrollWidth <= element.clientWidth + 2) return;
+          isDragging = true;
+          startX = event.clientX;
+          startLeft = element.scrollLeft;
+          element.classList.add("is-dragging");
+          if (element.setPointerCapture) element.setPointerCapture(event.pointerId);
+        });
+
+        element.addEventListener("pointermove", (event) => {
+          if (!isDragging) return;
+          element.scrollLeft = startLeft - (event.clientX - startX);
+        });
+
+        ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
+          element.addEventListener(eventName, () => {
+            isDragging = false;
+            element.classList.remove("is-dragging");
+          });
+        });
+      });
     }
 
     function selectLeague(leagueId) {
