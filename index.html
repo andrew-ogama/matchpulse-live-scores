@@ -1851,7 +1851,8 @@
     }
 
     .stadium-card,
-    .team-sheet {
+    .team-sheet,
+    .match-record-card {
       border: 1px solid rgba(148, 163, 184, 0.14);
       border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.035);
@@ -1866,12 +1867,63 @@
     }
 
     .stadium-card span,
+    .match-record-card > span,
     .player-section span {
       display: block;
       color: #9aa8b8;
       font-size: 10px;
       font-weight: 900;
       text-transform: uppercase;
+    }
+
+    .match-record-card {
+      display: grid;
+      gap: 10px;
+    }
+
+    .match-record-card strong {
+      color: #eef4fb;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .scorer-list,
+    .stat-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .record-row,
+    .stat-row {
+      min-height: 30px;
+      display: grid;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.035);
+      padding: 7px 9px;
+      color: #dce6f2;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .stat-row {
+      grid-template-columns: 46px minmax(0, 1fr) 46px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-row span:nth-child(2) {
+      color: #9aa8b8;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .record-row.muted,
+    .stat-row.muted {
+      color: #9ba8b8;
+      border-style: dashed;
     }
 
     .stadium-card strong {
@@ -2804,20 +2856,30 @@
     }
 
     .stadium-card,
-    .team-sheet {
+    .team-sheet,
+    .match-record-card {
       background: var(--surface-2);
       border-color: var(--line);
     }
 
     .stadium-card strong,
+    .match-record-card strong,
     .sheet-head strong,
     .player-chip {
       color: var(--text);
     }
 
     .stadium-card small,
+    .record-row,
+    .stat-row,
     .sheet-head em {
       color: var(--muted);
+    }
+
+    .record-row,
+    .stat-row {
+      background: #fff;
+      border-color: var(--line);
     }
 
     .stadium-badge {
@@ -4065,6 +4127,7 @@
       }
 
       .stadium-card,
+      .match-record-card,
       .team-sheet {
         border-radius: 12px;
         padding: 10px;
@@ -5850,7 +5913,7 @@
         const byId = new Map(enriched.map((event) => [event.id, event]));
 
         state.events = state.events.map((event) => byId.get(event.id) || event);
-        addUpdate("Match details", `${enriched.length} cards updated with lineups, coaches and stadia.`, "info");
+        addUpdate("Match details", `${enriched.length} cards updated with stats, scorers, lineups and stadia.`, "info");
         render();
       } catch (error) {
         console.warn("Match detail hydration failed", error);
@@ -5895,6 +5958,8 @@
       const details = {
         stadium: normalizeStadium(competition.venue || payload.gameInfo?.venue) || event.stadium,
         venue: formatVenue(competition.venue || payload.gameInfo?.venue) || event.venue,
+        scorers: extractScorers(payload),
+        matchStats: extractMatchStats(payload, event),
         home: extractTeamSheet(payload, event.home, "home"),
         away: extractTeamSheet(payload, event.away, "away")
       };
@@ -5907,6 +5972,8 @@
         ...event,
         stadium: details.stadium || event.stadium,
         venue: details.venue || event.venue,
+        scorers: details.scorers?.length ? details.scorers : event.scorers,
+        matchStats: details.matchStats?.length ? details.matchStats : event.matchStats,
         home: mergeTeamSheet(event.home, details.home),
         away: mergeTeamSheet(event.away, details.away)
       };
@@ -5925,13 +5992,103 @@
       const teamBlocks = findTeamBlocks(payload, team, side);
       const coach = firstValue(teamBlocks.map((block) => extractCoach(block))) || "Not released";
       const lineup = uniquePlayers(teamBlocks.flatMap((block) => extractLineup(block))).slice(0, 11);
-      const players = uniquePlayers(teamBlocks.flatMap((block) => extractPlayers(block))).slice(0, 8);
+      const players = uniquePlayers(teamBlocks.flatMap((block) => extractPlayers(block))).slice(0, 14);
 
       return {
         coach,
         lineup,
         players
       };
+    }
+
+    function extractScorers(payload) {
+      const plays = [
+        ...asArray(payload?.scoringPlays),
+        ...asArray(payload?.header?.competitions?.[0]?.scoringPlays),
+        ...asArray(payload?.competitions?.[0]?.scoringPlays),
+        ...asArray(payload?.scoringSummary)
+      ];
+
+      return unique(plays.map((play) => scoringPlayText(play)).filter(Boolean)).slice(0, 8);
+    }
+
+    function scoringPlayText(play) {
+      if (!play || typeof play !== "object") return "";
+      const clock = play.clock?.displayValue || play.time?.displayValue || play.displayClock || play.clock?.value || play.time || "";
+      const team = play.team?.shortDisplayName || play.team?.abbreviation || play.team?.displayName || "";
+      const people = uniquePlayers([
+        personName(play.scorer),
+        personName(play.athlete),
+        personName(play.player),
+        ...collectPeople(play.participants),
+        ...collectPeople(play.athletes),
+        ...collectPeople(play.players),
+        ...collectPeople(play.scorer)
+      ]);
+      const text = String(play.text || play.displayText || play.description || play.type?.text || "").trim();
+      const scorer = people[0] || text;
+      const parts = [clock, scorer, team].filter(Boolean);
+      return parts.join(" - ");
+    }
+
+    function extractMatchStats(payload, event) {
+      const homeStats = collectTeamStats(findTeamBlocks(payload, event.home, "home"));
+      const awayStats = collectTeamStats(findTeamBlocks(payload, event.away, "away"));
+      const statDefs = [
+        { label: "Possession", keys: ["possessionpct", "possession", "possessionpercentage"] },
+        { label: "Shots", keys: ["totalshots", "shots", "shotsfor"] },
+        { label: "On target", keys: ["shotson goal", "shotsongoal", "shotson target", "shotsontarget"] },
+        { label: "Corners", keys: ["cornerkicks", "corners"] },
+        { label: "Fouls", keys: ["foulscommitted", "fouls"] },
+        { label: "Yellow cards", keys: ["yellowcards", "yellow"] },
+        { label: "Red cards", keys: ["redcards", "red"] }
+      ];
+
+      return statDefs
+        .map((definition) => {
+          const home = readTeamStat(homeStats, definition.keys);
+          const away = readTeamStat(awayStats, definition.keys);
+          return home || away ? { label: definition.label, home: home || "-", away: away || "-" } : null;
+        })
+        .filter(Boolean)
+        .slice(0, 6);
+    }
+
+    function collectTeamStats(blocks) {
+      const stats = new Map();
+
+      blocks.forEach((block) => {
+        [
+          ...asArray(block.statistics),
+          ...asArray(block.stats),
+          ...asArray(block.team?.statistics),
+          ...asArray(block.team?.stats)
+        ].forEach((stat) => {
+          const key = statKey(stat.name || stat.displayName || stat.label || stat.abbreviation || stat.type);
+          const value = stat.displayValue ?? stat.value ?? stat.summary;
+          if (key && value !== undefined && value !== null && value !== "") {
+            stats.set(key, String(value));
+          }
+        });
+      });
+
+      return stats;
+    }
+
+    function readTeamStat(stats, keys) {
+      for (const key of keys) {
+        const direct = stats.get(statKey(key));
+        if (direct) return direct;
+      }
+      return "";
+    }
+
+    function statKey(value) {
+      return String(value || "").toLowerCase().replace(/[^a-z]/g, "");
+    }
+
+    function asArray(value) {
+      return Array.isArray(value) ? value : [];
     }
 
     function findTeamBlocks(payload, team, side) {
@@ -5996,6 +6153,8 @@
         stadium: normalizeStadium(competition.venue),
         venue: formatVenue(competition.venue),
         broadcast: unique(broadcastNames).join(", ") || "Check local listings",
+        scorers: extractScorers(event),
+        matchStats: [],
         home: normalizeTeam(home),
         away: normalizeTeam(away)
       };
@@ -6125,7 +6284,7 @@
         ...collectPeople(source.substitutes),
         ...collectPeople(source.statistics),
         ...collectPeople(source.lineup)
-      ]).slice(0, 8);
+      ]).slice(0, 14);
     }
 
     function collectPeople(value, depth = 0) {
@@ -6444,9 +6603,10 @@
             </div>
           </div>
           <details class="match-drawer">
-            <summary>Lineups, coaches, players and stadia</summary>
+            <summary>Stats, scorers, played players and stadia</summary>
             <div class="match-intel">
               ${stadiumMarkup(event)}
+              ${matchRecordMarkup(event)}
               <div class="lineup-grid">
                 ${teamSheetMarkup(event.home)}
                 ${teamSheetMarkup(event.away)}
@@ -6475,6 +6635,41 @@
       `;
     }
 
+    function matchRecordMarkup(event) {
+      return `
+        <div class="match-record-card">
+          <span>Match record</span>
+          <strong>Stats and scorers</strong>
+          ${scorerListMarkup(event.scorers)}
+          ${statListMarkup(event.matchStats)}
+        </div>
+      `;
+    }
+
+    function scorerListMarkup(scorers = []) {
+      const items = scorers.length ? scorers : ["Goalscorers not released"];
+      return `
+        <div class="scorer-list" aria-label="Goalscorers">
+          ${items.map((item) => `<div class="record-row ${scorers.length ? "" : "muted"}">${escapeHtml(item)}</div>`).join("")}
+        </div>
+      `;
+    }
+
+    function statListMarkup(stats = []) {
+      const rows = stats.length ? stats : [{ label: "Match stats", home: "-", away: "-" }];
+      return `
+        <div class="stat-list" aria-label="Match stats">
+          ${rows.map((row) => `
+            <div class="stat-row ${stats.length ? "" : "muted"}">
+              <span>${escapeHtml(row.home)}</span>
+              <span>${escapeHtml(row.label)}</span>
+              <span>${escapeHtml(row.away)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function teamSheetMarkup(team) {
       return `
         <div class="team-sheet">
@@ -6487,8 +6682,8 @@
             ${playerChips(team.lineup, "Lineup not released")}
           </div>
           <div class="player-section">
-            <span>Players</span>
-            ${playerChips(team.players, "Players not released")}
+            <span>Played</span>
+            ${playerChips(team.players, "Played players not released")}
           </div>
         </div>
       `;
@@ -6849,6 +7044,13 @@
           venue: "Lumen Field, Seattle, USA",
           stadium: { name: "Lumen Field", location: "Seattle, USA", capacity: "68,740 capacity", surface: "FieldTurf" },
           broadcast: "FS1, Universo, FOX One",
+          scorers: [],
+          matchStats: [
+            { label: "Possession", home: "52%", away: "48%" },
+            { label: "Shots", home: "0", away: "0" },
+            { label: "On target", home: "0", away: "0" },
+            { label: "Corners", home: "0", away: "0" }
+          ],
           home: {
             name: "Bosnia-Herzegovina",
             fullName: "Bosnia-Herzegovina",
@@ -6892,6 +7094,13 @@
           venue: "MetLife Stadium, New Jersey, USA",
           stadium: { name: "MetLife Stadium", location: "New Jersey, USA", capacity: "82,500 capacity", surface: "Artificial turf" },
           broadcast: "FOX",
+          scorers: ["22' - Christian Pulisic - USA", "54' - Hakim Ziyech - MAR"],
+          matchStats: [
+            { label: "Possession", home: "49%", away: "51%" },
+            { label: "Shots", home: "9", away: "11" },
+            { label: "On target", home: "4", away: "5" },
+            { label: "Corners", home: "3", away: "6" }
+          ],
           home: {
             name: "United States",
             fullName: "United States",
