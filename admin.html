@@ -705,21 +705,152 @@
 
     .article-composer {
       display: grid;
+      gap: 14px;
+    }
+
+    .wp-editor-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .wp-editor-main,
+    .wp-editor-sidebar {
+      min-width: 0;
+      display: grid;
       gap: 12px;
     }
 
-    .article-fields {
-      display: grid;
-      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-      gap: 10px;
+    .article-title-input {
+      min-height: 58px;
+      border-color: rgba(47, 111, 246, 0.22);
+      background: #fff;
+      font-size: 24px;
+      font-weight: 850;
+      letter-spacing: 0;
     }
 
-    .article-fields .wide {
-      grid-column: 1 / -1;
+    .permalink-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      background: var(--surface-soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .permalink-row strong {
+      color: var(--ink);
+    }
+
+    .editor-frame {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .editor-toolbar {
+      min-height: 42px;
+      border-bottom: 1px solid var(--line);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      background: var(--surface-soft);
+      scrollbar-width: none;
+    }
+
+    .editor-toolbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tool-button {
+      min-width: 34px;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 9px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .tool-button:hover {
+      border-color: rgba(47, 111, 246, 0.4);
+      color: var(--blue);
+      background: var(--blue-soft);
     }
 
     .article-body {
-      min-height: 190px;
+      min-height: 360px;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.65;
+    }
+
+    .wp-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .wp-box-head {
+      min-height: 42px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      background: var(--surface-soft);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .wp-box-body {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .publish-list {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .publish-list span {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .publish-list strong {
+      color: var(--ink);
+    }
+
+    .article-status-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
 
     .article-actions {
@@ -730,19 +861,39 @@
       flex-wrap: wrap;
     }
 
+    .posts-panel {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .posts-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .posts-head h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
     .article-list {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 8px;
     }
 
     .article-card {
       min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px;
       display: grid;
-      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) 122px 88px auto;
+      gap: 10px;
+      align-items: center;
       background: var(--surface-soft);
     }
 
@@ -753,18 +904,27 @@
       font-size: 15px;
     }
 
+    .article-card-title {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
     .article-card p {
       margin: 0;
       color: var(--muted);
       font-size: 12px;
       font-weight: 750;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .article-meta {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
       color: var(--muted);
       font-size: 11px;
       font-weight: 900;
@@ -1032,8 +1192,7 @@
         grid-template-columns: 1fr;
       }
 
-      .article-fields,
-      .article-list {
+      .wp-editor-layout {
         grid-template-columns: 1fr;
       }
 
@@ -1042,6 +1201,27 @@
       }
 
       .article-actions .button {
+        flex: 1;
+      }
+
+      .article-title-input {
+        font-size: 20px;
+      }
+
+      .article-body {
+        min-height: 300px;
+      }
+
+      .article-card {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .article-card-actions {
+        justify-content: stretch;
+      }
+
+      .article-card-actions .button {
         flex: 1;
       }
 
@@ -1201,35 +1381,84 @@
           </div>
           <div class="panel-body">
             <div class="article-composer">
-              <div class="article-fields">
-                <div class="field">
-                  <label for="articleCategory">Category</label>
-                  <select class="select" id="articleCategory">
-                    <option value="Match Report">Match Report</option>
-                    <option value="Breaking News">Breaking News</option>
-                    <option value="Match Preview">Match Preview</option>
-                    <option value="Analysis">Analysis</option>
-                    <option value="Transfer News">Transfer News</option>
-                  </select>
+              <div class="wp-editor-layout">
+                <div class="wp-editor-main">
+                  <input class="input article-title-input" id="articleTitle" type="text" maxlength="90" placeholder="Add title" />
+                  <div class="permalink-row">
+                    <span>Permalink:</span>
+                    <strong>matchpulse/articles/<span id="articleSlugPreview">new-post</span></strong>
+                  </div>
+                  <div class="editor-frame">
+                    <div class="editor-toolbar" aria-label="Article editor toolbar">
+                      <button class="tool-button" type="button" data-editor-action="bold" title="Bold">B</button>
+                      <button class="tool-button" type="button" data-editor-action="italic" title="Italic">I</button>
+                      <button class="tool-button" type="button" data-editor-action="heading" title="Heading">H2</button>
+                      <button class="tool-button" type="button" data-editor-action="quote" title="Quote">"</button>
+                      <button class="tool-button" type="button" data-editor-action="list" title="List">List</button>
+                      <button class="tool-button" type="button" data-editor-action="link" title="Link">Link</button>
+                    </div>
+                    <textarea class="textarea article-body" id="articleBody" placeholder="Start writing your article..."></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="articleSummary">Excerpt</label>
+                    <textarea class="textarea" id="articleSummary" maxlength="220" placeholder="Short summary for the article card."></textarea>
+                  </div>
                 </div>
-                <div class="field">
-                  <label for="articleTitle">Headline</label>
-                  <input class="input" id="articleTitle" type="text" maxlength="90" placeholder="Example: Germany edge Ecuador in late drama" />
-                </div>
-                <div class="field wide">
-                  <label for="articleSummary">Summary</label>
-                  <textarea class="textarea" id="articleSummary" maxlength="220" placeholder="Short intro for readers."></textarea>
-                </div>
-                <div class="field wide">
-                  <label for="articleBody">Article Body</label>
-                  <textarea class="textarea article-body" id="articleBody" placeholder="Write the full article here..."></textarea>
-                </div>
+                <aside class="wp-editor-sidebar" aria-label="Article settings">
+                  <div class="wp-box">
+                    <div class="wp-box-head">Publish</div>
+                    <div class="wp-box-body">
+                      <div class="publish-list">
+                        <span>Status <strong id="articleStatusPreview">Draft</strong></span>
+                        <span>Visibility <strong>Public</strong></span>
+                        <span>Read Time <strong id="articleReadTimePreview">1 min</strong></span>
+                      </div>
+                      <div class="article-status-actions">
+                        <button class="button" id="clearArticleBtn" type="button">Clear Draft</button>
+                        <button class="button primary" id="saveArticleBtn" type="button">Save Draft</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="wp-box">
+                    <div class="wp-box-head">Post Settings</div>
+                    <div class="wp-box-body">
+                      <div class="field">
+                        <label for="articleCategory">Category</label>
+                        <select class="select" id="articleCategory">
+                          <option value="Match Report">Match Report</option>
+                          <option value="Breaking News">Breaking News</option>
+                          <option value="Match Preview">Match Preview</option>
+                          <option value="Analysis">Analysis</option>
+                          <option value="Transfer News">Transfer News</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="articleStatus">Status</label>
+                        <select class="select" id="articleStatus">
+                          <option value="Draft">Draft</option>
+                          <option value="Ready for Review">Ready for Review</option>
+                          <option value="Published">Published</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="articleTags">Tags</label>
+                        <input class="input" id="articleTags" type="text" placeholder="Germany, Ecuador, World Cup" />
+                      </div>
+                      <div class="field">
+                        <label for="articleSlug">Slug</label>
+                        <input class="input" id="articleSlug" type="text" placeholder="article-url-slug" />
+                      </div>
+                    </div>
+                  </div>
+                </aside>
               </div>
-              <div class="article-actions">
-                <button class="button" id="clearArticleBtn" type="button">Clear</button>
-                <button class="button primary" id="saveArticleBtn" type="button">Save Article</button>
+              <div class="posts-panel">
+                <div class="posts-head">
+                  <h4>All Articles</h4>
+                  <span class="pill" id="articleTableCount">0 saved</span>
+                </div>
+                <div class="article-list" id="articleList"></div>
               </div>
-              <div class="article-list" id="articleList"></div>
             </div>
           </div>
         </section>
@@ -1402,10 +1631,17 @@
       articleTitle: document.getElementById("articleTitle"),
       articleSummary: document.getElementById("articleSummary"),
       articleBody: document.getElementById("articleBody"),
+      articleStatus: document.getElementById("articleStatus"),
+      articleTags: document.getElementById("articleTags"),
+      articleSlug: document.getElementById("articleSlug"),
+      articleSlugPreview: document.getElementById("articleSlugPreview"),
+      articleStatusPreview: document.getElementById("articleStatusPreview"),
+      articleReadTimePreview: document.getElementById("articleReadTimePreview"),
       saveArticleBtn: document.getElementById("saveArticleBtn"),
       clearArticleBtn: document.getElementById("clearArticleBtn"),
       articleList: document.getElementById("articleList"),
       articleCount: document.getElementById("articleCount"),
+      articleTableCount: document.getElementById("articleTableCount"),
       phonePreview: document.getElementById("phonePreview"),
       exportBtn: document.getElementById("exportBtn"),
       toast: document.getElementById("toast")
@@ -1480,6 +1716,11 @@
       els.saveArticleBtn.addEventListener("click", saveArticle);
       els.clearArticleBtn.addEventListener("click", clearArticleForm);
       els.articleList.addEventListener("click", handleArticleAction);
+      els.articleTitle.addEventListener("input", updateArticlePreview);
+      els.articleBody.addEventListener("input", updateArticlePreview);
+      els.articleStatus.addEventListener("change", updateArticlePreview);
+      els.articleSlug.addEventListener("input", updateArticlePreview);
+      document.querySelector(".editor-toolbar").addEventListener("click", handleEditorToolbar);
       els.exportBtn.addEventListener("click", exportSnapshot);
     }
 
@@ -1705,6 +1946,8 @@
 
     function renderArticles() {
       els.articleCount.textContent = state.articles.length;
+      els.articleTableCount.textContent = `${state.articles.length} saved`;
+      updateArticlePreview();
       if (!state.articles.length) {
         els.articleList.innerHTML = `<div class="empty">No news or articles saved yet.</div>`;
         return;
@@ -1712,13 +1955,19 @@
 
       els.articleList.innerHTML = state.articles.slice(0, 6).map((article) => `
         <article class="article-card">
+          <div class="article-card-title">
+            <strong title="${escapeAttr(article.title)}">${escapeHtml(article.title)}</strong>
+            <p>${escapeHtml(articleExcerpt(article))}</p>
+          </div>
           <div class="article-meta">
             <span>${escapeHtml(article.category)}</span>
-            <span>${escapeHtml(articleReadTime(article.body))}</span>
+            <span>${escapeHtml(article.tags || "No tags")}</span>
           </div>
-          <strong title="${escapeAttr(article.title)}">${escapeHtml(article.title)}</strong>
-          <p>${escapeHtml(articleExcerpt(article))}</p>
-          <span>${escapeHtml(relativeMatchTime(article.createdAt))}</span>
+          <span class="pill ${article.status === "Published" ? "final" : article.status === "Ready for Review" ? "upcoming" : ""}">${escapeHtml(article.status || "Draft")}</span>
+          <div class="article-meta">
+            <span>${escapeHtml(articleReadTime(article.body))}</span>
+            <span>${escapeHtml(relativeMatchTime(article.updatedAt || article.createdAt))}</span>
+          </div>
           <div class="article-card-actions">
             <button class="button" type="button" data-edit-article="${escapeAttr(article.id)}">Edit</button>
             <button class="button danger" type="button" data-delete-article="${escapeAttr(article.id)}">Delete</button>
@@ -1783,6 +2032,7 @@
       const title = els.articleTitle.value.trim();
       const summary = els.articleSummary.value.trim();
       const body = els.articleBody.value.trim();
+      const slug = slugify(els.articleSlug.value || title);
 
       if (!title || !body) {
         showToast("Add a headline and article body first.");
@@ -1796,8 +2046,10 @@
         title,
         summary,
         body,
+        slug,
+        tags: els.articleTags.value.trim(),
         createdAt: new Date().toISOString(),
-        status: "Draft"
+        status: els.articleStatus.value
       };
 
       if (state.editingArticleId) {
@@ -1821,7 +2073,11 @@
       els.articleSummary.value = "";
       els.articleBody.value = "";
       els.articleCategory.value = "Match Report";
-      els.saveArticleBtn.textContent = "Save Article";
+      els.articleStatus.value = "Draft";
+      els.articleTags.value = "";
+      els.articleSlug.value = "";
+      els.saveArticleBtn.textContent = "Save Draft";
+      updateArticlePreview();
     }
 
     function handleArticleAction(event) {
@@ -1846,7 +2102,11 @@
       els.articleTitle.value = article.title || "";
       els.articleSummary.value = article.summary || "";
       els.articleBody.value = article.body || "";
-      els.saveArticleBtn.textContent = "Update Article";
+      els.articleStatus.value = article.status || "Draft";
+      els.articleTags.value = article.tags || "";
+      els.articleSlug.value = article.slug || slugify(article.title);
+      els.saveArticleBtn.textContent = "Update Draft";
+      updateArticlePreview();
       document.querySelector("#articles")?.scrollIntoView({ behavior: "smooth", block: "start" });
       showToast("Article loaded for editing.");
     }
@@ -1859,6 +2119,43 @@
       saveSettings();
       render();
       showToast("Article deleted.");
+    }
+
+    function updateArticlePreview() {
+      const slug = slugify(els.articleSlug.value || els.articleTitle.value || "new-post");
+      els.articleSlugPreview.textContent = slug;
+      els.articleStatusPreview.textContent = els.articleStatus.value || "Draft";
+      els.articleReadTimePreview.textContent = articleReadTime(els.articleBody.value);
+    }
+
+    function handleEditorToolbar(event) {
+      const button = event.target.closest("[data-editor-action]");
+      if (!button) return;
+
+      const action = button.dataset.editorAction;
+      const wrappers = {
+        bold: ["**", "**"],
+        italic: ["*", "*"],
+        heading: ["## ", ""],
+        quote: ["> ", ""],
+        list: ["- ", ""],
+        link: ["[", "](https://)"]
+      };
+      const [before, after] = wrappers[action] || ["", ""];
+      insertEditorText(before, after);
+      updateArticlePreview();
+    }
+
+    function insertEditorText(before, after) {
+      const input = els.articleBody;
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      const selected = input.value.slice(start, end);
+      const replacement = `${before}${selected || "text"}${after}`;
+      input.value = `${input.value.slice(0, start)}${replacement}${input.value.slice(end)}`;
+      input.focus();
+      const cursor = start + replacement.length;
+      input.setSelectionRange(cursor, cursor);
     }
 
     function exportSnapshot() {
@@ -2021,6 +2318,14 @@
       const words = String(body || "").trim().split(/\s+/).filter(Boolean).length;
       const minutes = Math.max(1, Math.ceil(words / 180));
       return `${minutes} min read`;
+    }
+
+    function slugify(value) {
+      return String(value || "new-post")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 70) || "new-post";
     }
 
     function initials(value) {
