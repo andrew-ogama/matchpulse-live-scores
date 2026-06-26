@@ -5538,7 +5538,7 @@
               <button class="segment is-active" data-filter="all" type="button">All</button>
               <button class="segment" data-filter="live" type="button">Live</button>
               <button class="segment" data-filter="upcoming" type="button">Upcoming</button>
-              <button class="segment" data-filter="final" type="button">Final</button>
+              <button class="segment" data-filter="final" type="button">Played</button>
             </div>
           </div>
 
@@ -5569,7 +5569,7 @@
             </div>
             <div class="stat">
               <strong id="finalStat">0</strong>
-              <span>Final</span>
+              <span>Played</span>
             </div>
           </div>
 
@@ -5773,6 +5773,7 @@
           state.filter = button.dataset.filter;
           document.querySelectorAll(".segment").forEach((item) => item.classList.toggle("is-active", item === button));
           render();
+          hydrateVisibleMatchDetails();
         });
       });
 
@@ -5903,8 +5904,9 @@
       });
     }
 
-    async function hydrateMatchDetails(events, requestId) {
-      const candidates = prioritizeDetailEvents(events).slice(0, state.leagueId === "all-soccer" ? 8 : 12);
+    async function hydrateMatchDetails(events, requestId, options = {}) {
+      const limit = options.limit || (state.leagueId === "all-soccer" ? 16 : 20);
+      const candidates = prioritizeDetailEvents(events).slice(0, limit);
       if (!candidates.length) return;
 
       try {
@@ -5921,14 +5923,25 @@
     }
 
     function prioritizeDetailEvents(events) {
-      const rank = { live: 0, upcoming: 1, final: 2 };
+      const rank = { live: 0, final: 1, upcoming: 2 };
       return [...events]
         .filter((event) => event.id && event.leagueSlug)
         .sort((a, b) => {
           const rankDiff = rank[bucket(a)] - rank[bucket(b)];
           if (rankDiff !== 0) return rankDiff;
-          return new Date(a.date) - new Date(b.date);
+          return bucket(a) === "final"
+            ? new Date(b.date) - new Date(a.date)
+            : new Date(a.date) - new Date(b.date);
         });
+    }
+
+    function hydrateVisibleMatchDetails() {
+      if (state.loading) return;
+      const visibleEvents = getVisibleEvents();
+      if (!visibleEvents.length) return;
+      const requestId = state.detailsRequestId + 1;
+      state.detailsRequestId = requestId;
+      hydrateMatchDetails(visibleEvents, requestId, { limit: state.filter === "final" ? 24 : 12 });
     }
 
     async function fetchEventDetails(event) {
@@ -6636,18 +6649,20 @@
     }
 
     function matchRecordMarkup(event) {
+      const title = bucket(event) === "final" ? "Played match stats" : "Stats and scorers";
       return `
         <div class="match-record-card">
           <span>Match record</span>
-          <strong>Stats and scorers</strong>
-          ${scorerListMarkup(event.scorers)}
-          ${statListMarkup(event.matchStats)}
+          <strong>${escapeHtml(title)}</strong>
+          ${scorerListMarkup(event.scorers, event)}
+          ${statListMarkup(event.matchStats, event)}
         </div>
       `;
     }
 
-    function scorerListMarkup(scorers = []) {
-      const items = scorers.length ? scorers : ["Goalscorers not released"];
+    function scorerListMarkup(scorers = [], event) {
+      const fallback = bucket(event) === "final" ? "No scorers released for this played match" : "Goalscorers not released";
+      const items = scorers.length ? scorers : [fallback];
       return `
         <div class="scorer-list" aria-label="Goalscorers">
           ${items.map((item) => `<div class="record-row ${scorers.length ? "" : "muted"}">${escapeHtml(item)}</div>`).join("")}
@@ -6655,8 +6670,9 @@
       `;
     }
 
-    function statListMarkup(stats = []) {
-      const rows = stats.length ? stats : [{ label: "Match stats", home: "-", away: "-" }];
+    function statListMarkup(stats = [], event) {
+      const label = bucket(event) === "final" ? "Played match stats" : "Match stats";
+      const rows = stats.length ? stats : [{ label, home: "-", away: "-" }];
       return `
         <div class="stat-list" aria-label="Match stats">
           ${rows.map((row) => `
@@ -6788,10 +6804,12 @@
     }
 
     function sortEvents(a, b) {
-      const rank = { live: 0, upcoming: 1, final: 2 };
+      const rank = { live: 0, final: 1, upcoming: 2 };
       const rankDiff = rank[bucket(a)] - rank[bucket(b)];
       if (rankDiff !== 0) return rankDiff;
-      return new Date(a.date) - new Date(b.date);
+      return bucket(a) === "final"
+        ? new Date(b.date) - new Date(a.date)
+        : new Date(a.date) - new Date(b.date);
     }
 
     function bucket(event) {
