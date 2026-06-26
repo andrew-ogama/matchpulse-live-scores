@@ -6137,8 +6137,8 @@
           .slice(0, 5);
         state.articlesAvailable = true;
       } catch (error) {
-        state.articles = [];
-        state.articlesAvailable = false;
+        state.articles = localPreviewArticles();
+        state.articlesAvailable = Boolean(state.articles.length);
         console.warn("Public articles unavailable", error);
       } finally {
         state.articlesLoading = false;
@@ -7042,7 +7042,8 @@
 
     function articleCardMarkup(article) {
       const title = article.title || "Untitled article";
-      const category = article.category || "Match Report";
+      const isLocalPreview = article.localPreview || (article.status && article.status !== "Published");
+      const category = isLocalPreview ? "Local Preview" : article.category || "Match Report";
       const summary = article.summary || articleExcerpt(article.body);
       const published = relativeMatchTime(article.publishedAt || article.updatedAt || article.createdAt) || "Latest";
       const link = article.slug ? `article.html?slug=${encodeURIComponent(article.slug)}` : "article.html";
@@ -7057,6 +7058,30 @@
           <p class="article-summary">${escapeHtml(summary)}</p>
         </a>
       `;
+    }
+
+    function localPreviewArticles() {
+      const articles = readLocalAdminArticles()
+        .filter((article) => article && article.title && article.body);
+      const published = articles.filter((article) => (article.status || "Draft") === "Published");
+      const visible = published.length ? published : articles;
+
+      return visible
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+        .slice(0, 5)
+        .map((article) => ({
+          ...article,
+          localPreview: (article.status || "Draft") !== "Published"
+        }));
+    }
+
+    function readLocalAdminArticles() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
+        return Array.isArray(saved.articles) ? saved.articles : [];
+      } catch (error) {
+        return [];
+      }
     }
 
     function articleExcerpt(body) {

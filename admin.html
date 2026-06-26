@@ -2369,7 +2369,10 @@
       clearArticleForm();
       saveSettings();
       render();
-      showToast(wasEditing ? "Article updated." : "Article saved to the dashboard.");
+      const localMessage = article.status === "Published"
+        ? "Article saved locally. It will show on this browser's front page."
+        : "Draft saved locally. Change status to Published when it is ready for the front page.";
+      showToast(wasEditing ? localMessage.replace("saved", "updated") : localMessage);
     }
 
     function clearArticleForm() {
@@ -2451,6 +2454,7 @@
       els.articleSlugPreview.textContent = slug;
       els.articleStatusPreview.textContent = els.articleStatus.value || "Draft";
       els.articleReadTimePreview.textContent = articleReadTime(els.articleBody.value);
+      els.saveArticleBtn.textContent = els.articleStatus.value === "Published" ? "Publish Article" : "Save Draft";
     }
 
     function handleEditorToolbar(event) {

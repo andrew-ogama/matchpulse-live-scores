@@ -411,6 +411,15 @@
 
         renderArticle(payload.article);
       } catch (error) {
+        const localArticle = findLocalArticle(slug);
+        if (localArticle) {
+          renderArticle({
+            ...localArticle,
+            localPreview: (localArticle.status || "Draft") !== "Published"
+          });
+          return;
+        }
+
         console.warn("Article unavailable", error);
         showMissing("Article not available yet", "This story will open here once the backend is connected and the article is published.");
       }
@@ -430,8 +439,8 @@
       document.title = `${article.title || "MatchPulse Article"} - MatchPulse`;
       els.title.textContent = article.title || "Untitled article";
       els.summary.textContent = article.summary || articleExcerpt(article.body);
-      els.category.textContent = article.category || "News";
-      els.published.textContent = formatDate(article.publishedAt || article.updatedAt || article.createdAt);
+      els.category.textContent = article.localPreview ? "Local Preview" : article.category || "News";
+      els.published.textContent = article.localPreview ? "Saved locally" : formatDate(article.publishedAt || article.updatedAt || article.createdAt);
       els.tags.textContent = article.tags || "MatchPulse";
       els.body.innerHTML = renderBody(article.body || article.summary || "");
 
@@ -500,6 +509,30 @@
     function articleExcerpt(body) {
       const text = String(body || "").replace(/\s+/g, " ").trim();
       return text.length > 150 ? `${text.slice(0, 147)}...` : text || "MatchPulse football update.";
+    }
+
+    function findLocalArticle(slugValue) {
+      return readLocalAdminArticles().find((article) => {
+        const articleSlug = article.slug || slugify(article.title);
+        return articleSlug === slugValue;
+      });
+    }
+
+    function readLocalAdminArticles() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
+        return Array.isArray(saved.articles) ? saved.articles : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function slugify(value) {
+      return String(value || "new-post")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 70) || "new-post";
     }
 
     function formatDate(value) {
