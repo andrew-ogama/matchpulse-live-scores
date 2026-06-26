@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchPulse Article</title>
+  <meta name="description" content="Read MatchPulse football news, match reports, and live score updates." />
+  <meta name="theme-color" content="#ff3d52" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page: #f4f5f8;
+      --surface: #ffffff;
+      --surface-2: #f8f9fc;
+      --line: #e1e6ef;
+      --text: #151923;
+      --muted: #778195;
+      --red: #ff3d52;
+      --red-dark: #d91f36;
+      --blue: #376bff;
+      --blue-soft: #edf3ff;
+      --shadow: 0 18px 50px rgba(25, 31, 44, 0.1);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--page);
+      color: var(--text);
+      font-family: Manrope, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    body {
+      min-width: 320px;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--red);
+      color: #ffffff;
+      box-shadow: 0 16px 38px rgba(255, 61, 82, 0.18);
+    }
+
+    .topbar-inner {
+      width: min(980px, calc(100% - 28px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      color: var(--red);
+      font-weight: 900;
+      letter-spacing: 0;
+      flex: 0 0 auto;
+    }
+
+    .brand strong {
+      display: block;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: clamp(20px, 5vw, 28px);
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.9;
+    }
+
+    .back-link {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      border-radius: var(--radius);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    main {
+      width: min(980px, calc(100% - 28px));
+      margin: 22px auto 48px;
+    }
+
+    .article-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .article-card,
+    .side-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .article-hero {
+      min-height: 180px;
+      display: grid;
+      align-items: end;
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(255, 61, 82, 0.92), rgba(55, 107, 255, 0.78)),
+        var(--red);
+      color: #ffffff;
+    }
+
+    .article-hero.has-image {
+      position: relative;
+      min-height: 260px;
+      background-position: center;
+      background-size: cover;
+    }
+
+    .article-hero.has-image::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(13, 18, 28, 0.18), rgba(13, 18, 28, 0.74));
+    }
+
+    .hero-copy {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      max-width: 680px;
+    }
+
+    .kicker {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: clamp(30px, 7vw, 54px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      margin: 0;
+      max-width: 620px;
+      font-size: clamp(15px, 3.8vw, 18px);
+      font-weight: 750;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .article-body {
+      padding: 26px;
+    }
+
+    .article-body p,
+    .article-body li,
+    .article-body blockquote {
+      font-size: 16px;
+      color: #303747;
+    }
+
+    .article-body p {
+      margin: 0 0 18px;
+    }
+
+    .article-body h2 {
+      margin: 28px 0 12px;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    .article-body ul {
+      margin: 0 0 18px;
+      padding-left: 20px;
+    }
+
+    .article-body blockquote {
+      margin: 22px 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--red);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: var(--surface-2);
+      font-weight: 750;
+    }
+
+    .side-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .side-card h2 {
+      margin: 0;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .meta-row {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+
+    .meta-row span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .meta-row strong {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .status-box {
+      border: 1px dashed #c8d0df;
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .status-box strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 780px) {
+      .topbar-inner,
+      main {
+        width: min(100% - 20px, 430px);
+      }
+
+      .topbar-inner {
+        min-height: 66px;
+      }
+
+      .brand strong {
+        font-size: 20px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .back-link {
+        padding: 0 10px;
+      }
+
+      .article-shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .article-hero,
+      .article-hero.has-image {
+        min-height: 220px;
+        padding: 18px;
+      }
+
+      .article-body {
+        padding: 20px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" aria-label="MatchPulse home">
+        <span class="brand-mark">MP</span>
+        <span>
+          <strong>MatchPulse</strong>
+          <span>Live football match centre</span>
+        </span>
+      </a>
+      <a class="back-link" href="index.html">Scores</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="article-shell" id="articleShell">
+      <article class="article-card">
+        <section class="article-hero">
+          <div class="hero-copy">
+            <span class="kicker">MatchPulse News</span>
+            <h1 id="articleTitle">Loading article</h1>
+            <p class="summary" id="articleSummary">Checking the latest published story from the admin dashboard.</p>
+          </div>
+        </section>
+        <div class="article-body" id="articleBody">
+          <div class="status-box"><strong>Loading</strong>Please wait a moment.</div>
+        </div>
+      </article>
+
+      <aside class="side-card" aria-label="Article details">
+        <h2>Story Details</h2>
+        <div class="meta-row">
+          <span>Category</span>
+          <strong id="articleCategory">News</strong>
+        </div>
+        <div class="meta-row">
+          <span>Published</span>
+          <strong id="articlePublished">Checking</strong>
+        </div>
+        <div class="meta-row">
+          <span>Tags</span>
+          <strong id="articleTags">MatchPulse</strong>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const BACKEND_API_ROOT = new URL("api/", window.location.href).toString();
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug") || "";
+
+    const els = {
+      hero: document.querySelector(".article-hero"),
+      title: document.getElementById("articleTitle"),
+      summary: document.getElementById("articleSummary"),
+      body: document.getElementById("articleBody"),
+      category: document.getElementById("articleCategory"),
+      published: document.getElementById("articlePublished"),
+      tags: document.getElementById("articleTags")
+    };
+
+    loadArticle();
+
+    async function loadArticle() {
+      if (!slug) {
+        showMissing("No article selected", "Open a story from the Latest News section on the scores page.");
+        return;
+      }
+
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_API_ROOT}articles.php?slug=${encodeURIComponent(slug)}`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        }, 3500);
+        if (!response.ok) {
+          throw new Error(`Article request failed: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        if (!payload.article) {
+          throw new Error("Article not found");
+        }
+
+        renderArticle(payload.article);
+      } catch (error) {
+        console.warn("Article unavailable", error);
+        showMissing("Article not available yet", "This story will open here once the backend is connected and the article is published.");
+      }
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 3500) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    function renderArticle(article) {
+      document.title = `${article.title || "MatchPulse Article"} - MatchPulse`;
+      els.title.textContent = article.title || "Untitled article";
+      els.summary.textContent = article.summary || articleExcerpt(article.body);
+      els.category.textContent = article.category || "News";
+      els.published.textContent = formatDate(article.publishedAt || article.updatedAt || article.createdAt);
+      els.tags.textContent = article.tags || "MatchPulse";
+      els.body.innerHTML = renderBody(article.body || article.summary || "");
+
+      if (article.featuredImage) {
+        els.hero.classList.add("has-image");
+        els.hero.style.backgroundImage = `linear-gradient(180deg, rgba(13, 18, 28, 0.2), rgba(13, 18, 28, 0.74)), url("${escapeCssUrl(article.featuredImage)}")`;
+      }
+    }
+
+    function showMissing(title, message) {
+      els.title.textContent = title;
+      els.summary.textContent = message;
+      els.category.textContent = "News";
+      els.published.textContent = "Waiting";
+      els.tags.textContent = "MatchPulse";
+      els.body.innerHTML = `<div class="status-box"><strong>${escapeHtml(title)}</strong>${escapeHtml(message)}</div>`;
+    }
+
+    function renderBody(value) {
+      const lines = String(value || "").replace(/\r\n/g, "\n").split("\n");
+      const blocks = [];
+      let listItems = [];
+
+      const flushList = () => {
+        if (!listItems.length) return;
+        blocks.push(`<ul>${listItems.map((item) => `<li>${formatInline(item)}</li>`).join("")}</ul>`);
+        listItems = [];
+      };
+
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          flushList();
+          return;
+        }
+
+        if (trimmed.startsWith("- ")) {
+          listItems.push(trimmed.slice(2));
+          return;
+        }
+
+        flushList();
+
+        if (trimmed.startsWith("## ")) {
+          blocks.push(`<h2>${formatInline(trimmed.slice(3))}</h2>`);
+        } else if (trimmed.startsWith("> ")) {
+          blocks.push(`<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`);
+        } else {
+          blocks.push(`<p>${formatInline(trimmed)}</p>`);
+        }
+      });
+
+      flushList();
+
+      return blocks.length
+        ? blocks.join("")
+        : `<div class="status-box"><strong>No article body</strong>The article body has not been added yet.</div>`;
+    }
+
+    function formatInline(value) {
+      return escapeHtml(value)
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>");
+    }
+
+    function articleExcerpt(body) {
+      const text = String(body || "").replace(/\s+/g, " ").trim();
+      return text.length > 150 ? `${text.slice(0, 147)}...` : text || "MatchPulse football update.";
+    }
+
+    function formatDate(value) {
+      if (!value) return "Latest";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Latest";
+      return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+    }
+
+    function escapeCssUrl(value) {
+      return String(value || "").replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
