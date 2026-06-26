@@ -5745,6 +5745,9 @@
     const REFRESH_MS = 30000;
     const SCORE_TIMEOUT_MS = 4500;
     const DETAIL_TIMEOUT_MS = 3200;
+    const RECENT_WATCHED_DAYS = 3;
+    const RECENT_WATCHED_LIMIT = 6;
+    const RECENT_TOP_LEAGUE_LIMIT = 5;
     const LEAGUES = [
       { id: "all-soccer", label: "Top soccer live", sport: "soccer", slug: "all", sourceName: "Top soccer", all: true },
       { id: "world-cup", label: "FIFA World Cup 2026", sport: "soccer", slug: "fifa.world", sourceName: "FIFA World Cup" },
@@ -5769,7 +5772,10 @@
       snapshots: new Map(),
       updatedIds: new Set(),
       updateLog: [],
-      detailsRequestId: 0
+      detailsRequestId: 0,
+      watchedEvents: [],
+      watchedLoading: false,
+      watchedRequestId: 0
     };
 
     const els = {
@@ -5947,11 +5953,15 @@
         setConnection("online", "Live feed connected");
         addUpdate("Live sync", `${reason} - ${events.length} games loaded.`, "info");
         render();
+        loadRecentWatched();
         hydrateMatchDetails(events, detailsRequestId);
       } catch (error) {
         state.usingFallback = true;
         state.events = fallbackEvents();
         state.updatedIds = new Set();
+        state.watchedEvents = [];
+        state.watchedLoading = false;
+        state.watchedRequestId += 1;
         state.nextRefreshAt = Date.now() + REFRESH_MS;
         state.loading = false;
         setConnection("offline", "Live feed unavailable");
@@ -5973,8 +5983,8 @@
         .flatMap((result) => result.value);
     }
 
-    async function fetchLeague(league) {
-      const url = buildScoreboardUrl(league);
+    async function fetchLeague(league, dateValue = state.date) {
+      const url = buildScoreboardUrl(league, dateValue);
       const response = await fetchWithTimeout(url, { cache: "no-store" }, SCORE_TIMEOUT_MS);
       if (!response.ok) {
         throw new Error(`Scoreboard request failed: ${response.status}`);
@@ -5984,9 +5994,54 @@
       return (payload.events || []).map((event) => normalizeEvent(event, league, leagueInfo));
     }
 
-    function buildScoreboardUrl(league) {
-      const compactDate = state.date.replaceAll("-", "");
+    function buildScoreboardUrl(league, dateValue = state.date) {
+      const compactDate = dateValue.replaceAll("-", "");
       return `${API_ROOT}/${league.sport}/${league.slug}/scoreboard?dates=${compactDate}&limit=100`;
+    }
+
+    async function loadRecentWatched() {
+      const requestId = state.watchedRequestId + 1;
+      state.watchedRequestId = requestId;
+      state.watchedEvents = [];
+      state.watchedLoading = true;
+      renderWatched(getWatchedEvents(state.events));
+
+      try {
+        const recentEvents = await fetchRecentWatchedEvents();
+        if (requestId !== state.watchedRequestId) return;
+        state.watchedEvents = recentEvents;
+        state.watchedLoading = false;
+        if (recentEvents.length) {
+          addUpdate("Recent results", `${recentEvents.length} played games found from the last few days.`, "info");
+        }
+        renderWatched(getWatchedEvents(state.events));
+        renderUpdateLog();
+      } catch (error) {
+        if (requestId !== state.watchedRequestId) return;
+        state.watchedEvents = [];
+        state.watchedLoading = false;
+        renderWatched(getWatchedEvents(state.events));
+        console.warn("Recent watched games failed", error);
+      }
+    }
+
+    async function fetchRecentWatchedEvents() {
+      const league = getSelectedLeague();
+      const dates = recentDateValues(league.all ? 2 : RECENT_WATCHED_DAYS);
+      const leagues = league.all
+        ? LEAGUES.filter((item) => !item.all).slice(0, RECENT_TOP_LEAGUE_LIMIT)
+        : [league];
+      const tasks = leagues.flatMap((item) => dates.map((dateValue) => fetchLeague(item, dateValue)));
+      const results = await Promise.allSettled(tasks);
+      const fulfilled = results.filter((result) => result.status === "fulfilled");
+      if (!fulfilled.length) {
+        throw new Error("No recent results responded");
+      }
+
+      return uniqueEvents(fulfilled.flatMap((result) => result.value))
+        .filter((event) => bucket(event) === "final")
+        .sort(sortEvents)
+        .slice(0, RECENT_WATCHED_LIMIT);
     }
 
     async function enrichEvents(events) {
@@ -6843,27 +6898,44 @@
     }
 
     function renderWatched(events) {
-      els.watchedCount.textContent = events.length;
-      if (!events.length) {
-        els.watchedGames.innerHTML = `<div class="empty"><strong>No games watched yet</strong>Played games with final scores will appear here.</div>`;
+      els.watchedCount.textContent = state.watchedLoading && !events.length ? "..." : events.length;
+      if (!events.length && state.watchedLoading) {
+        els.watchedGames.innerHTML = `<div class="empty"><strong>Checking recent results</strong>Looking for games completed a few hours ago or yesterday.</div>`;
         return;
       }
 
-      els.watchedGames.innerHTML = events.slice(0, 5).map((event) => `
+      if (!events.length) {
+        els.watchedGames.innerHTML = `<div class="empty"><strong>No recent played games</strong>Final scores from today, yesterday, and the last few days will appear here.</div>`;
+        return;
+      }
+
+      els.watchedGames.innerHTML = events.slice(0, RECENT_WATCHED_LIMIT).map((event) => `
         <div class="watch-item">
           <div class="watch-score">${escapeHtml(event.home.score)}-${escapeHtml(event.away.score)}</div>
           <div>
             <strong>${escapeHtml(event.home.name)} vs ${escapeHtml(event.away.name)}</strong>
-            <span>${escapeHtml(liveLabel(event))} - ${escapeHtml(event.leagueName)}</span>
+            <span>${escapeHtml(watchedMeta(event))}</span>
           </div>
         </div>
       `).join("");
     }
 
     function getWatchedEvents(events) {
-      return [...events]
+      return uniqueEvents([
+        ...state.watchedEvents,
+        ...events
+      ])
         .filter((event) => bucket(event) === "final")
-        .sort(sortEvents);
+        .sort(sortEvents)
+        .slice(0, RECENT_WATCHED_LIMIT);
+    }
+
+    function watchedMeta(event) {
+      return [
+        event.shortDetail || event.statusDetail || "Final",
+        relativeMatchTime(event.date),
+        event.leagueName
+      ].filter(Boolean).join(" - ");
     }
 
     function renderUpdateLog() {
@@ -7071,6 +7143,43 @@
       return date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", second: "2-digit" });
     }
 
+    function relativeMatchTime(dateValue) {
+      if (!dateValue) return "";
+      const date = new Date(dateValue);
+      if (Number.isNaN(date.getTime())) return "";
+
+      const diffMs = Date.now() - date.getTime();
+      if (diffMs < 0) {
+        return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      }
+
+      const minutes = Math.floor(diffMs / 60000);
+      if (minutes < 1) return "just now";
+      if (minutes < 60) return `${minutes}m ago`;
+
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+
+      const days = Math.floor(hours / 24);
+      if (days === 1) return "yesterday";
+      if (days < 7) return `${days} days ago`;
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    }
+
+    function recentDateValues(days) {
+      const today = new Date();
+      const values = [];
+      for (let index = 0; index < days; index += 1) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - index);
+        values.push(toDateInputValue(date));
+      }
+      if (!values.includes(state.date)) {
+        values.push(state.date);
+      }
+      return values;
+    }
+
     function formatVenue(venue) {
       const stadium = normalizeStadium(venue);
       if (!stadium) return "Venue TBD";
@@ -7120,6 +7229,17 @@
 
     function unique(items) {
       return Array.from(new Set(items));
+    }
+
+    function uniqueEvents(events) {
+      const map = new Map();
+      events.forEach((event) => {
+        const key = event.id || `${event.leagueId}-${event.date}-${event.home?.name}-${event.away?.name}`;
+        if (!map.has(key)) {
+          map.set(key, event);
+        }
+      });
+      return Array.from(map.values());
     }
 
     function initials(value) {
