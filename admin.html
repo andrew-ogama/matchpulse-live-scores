@@ -172,6 +172,12 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .button.danger {
+      color: var(--red);
+      border-color: rgba(255, 63, 79, 0.18);
+      background: var(--red-soft);
+    }
+
     .icon-button {
       width: 40px;
       min-width: 40px;
@@ -349,7 +355,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -687,6 +693,97 @@
       gap: 10px;
     }
 
+    .content-panel {
+      border-color: rgba(47, 111, 246, 0.2);
+    }
+
+    .content-panel .panel-head {
+      background:
+        linear-gradient(90deg, rgba(47, 111, 246, 0.08), rgba(255, 63, 79, 0.08)),
+        var(--surface);
+    }
+
+    .article-composer {
+      display: grid;
+      gap: 12px;
+    }
+
+    .article-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+      gap: 10px;
+    }
+
+    .article-fields .wide {
+      grid-column: 1 / -1;
+    }
+
+    .article-body {
+      min-height: 190px;
+    }
+
+    .article-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .article-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .article-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      background: var(--surface-soft);
+    }
+
+    .article-card strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 15px;
+    }
+
+    .article-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .article-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .article-card-actions .button {
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
     .update-row {
       padding: 10px;
       display: grid;
@@ -935,6 +1032,19 @@
         grid-template-columns: 1fr;
       }
 
+      .article-fields,
+      .article-list {
+        grid-template-columns: 1fr;
+      }
+
+      .article-actions {
+        justify-content: stretch;
+      }
+
+      .article-actions .button {
+        flex: 1;
+      }
+
       .panel-head {
         align-items: flex-start;
         flex-direction: column;
@@ -1005,6 +1115,7 @@
           <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
           <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
           <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+          <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
         </nav>
         <div class="nav-card nav-summary">
           <strong><span class="status-dot" id="feedDot"></span> <span id="feedText">Checking feed</span></strong>
@@ -1016,7 +1127,7 @@
         <section class="hero-panel section" id="overview">
           <div>
             <h2>Admin dashboard</h2>
-            <p>Monitor live games, recent final scores, leagues, teams, and short site updates from one place.</p>
+            <p>Monitor live games, recent final scores, leagues, teams, short updates, news, and match articles from one place.</p>
           </div>
           <div class="hero-status">
             <span>Selected Competition</span>
@@ -1050,6 +1161,11 @@
             <strong id="recentStat">0</strong>
             <small>Last few days</small>
           </div>
+          <div class="stat-card">
+            <span>Articles</span>
+            <strong id="articleStat">0</strong>
+            <small>Drafts saved</small>
+          </div>
         </section>
 
         <section class="panel section" id="controls">
@@ -1071,6 +1187,49 @@
                 <input class="input" id="dateInput" type="date" />
               </div>
               <button class="button primary" id="loadBtn" type="button">Load Games</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel section content-panel" id="articles">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h3>News & Articles</h3>
+              <p>Write match reports, previews, breaking news, and longer stories.</p>
+            </div>
+            <span class="pill" id="articleCount">0</span>
+          </div>
+          <div class="panel-body">
+            <div class="article-composer">
+              <div class="article-fields">
+                <div class="field">
+                  <label for="articleCategory">Category</label>
+                  <select class="select" id="articleCategory">
+                    <option value="Match Report">Match Report</option>
+                    <option value="Breaking News">Breaking News</option>
+                    <option value="Match Preview">Match Preview</option>
+                    <option value="Analysis">Analysis</option>
+                    <option value="Transfer News">Transfer News</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="articleTitle">Headline</label>
+                  <input class="input" id="articleTitle" type="text" maxlength="90" placeholder="Example: Germany edge Ecuador in late drama" />
+                </div>
+                <div class="field wide">
+                  <label for="articleSummary">Summary</label>
+                  <textarea class="textarea" id="articleSummary" maxlength="220" placeholder="Short intro for readers."></textarea>
+                </div>
+                <div class="field wide">
+                  <label for="articleBody">Article Body</label>
+                  <textarea class="textarea article-body" id="articleBody" placeholder="Write the full article here..."></textarea>
+                </div>
+              </div>
+              <div class="article-actions">
+                <button class="button" id="clearArticleBtn" type="button">Clear</button>
+                <button class="button primary" id="saveArticleBtn" type="button">Save Article</button>
+              </div>
+              <div class="article-list" id="articleList"></div>
             </div>
           </div>
         </section>
@@ -1203,8 +1362,10 @@
       events: [],
       recentEvents: [],
       updates: savedSettings.updates || [],
+      articles: savedSettings.articles || [],
       visibleLeagues: savedSettings.visibleLeagues || Object.fromEntries(LEAGUES.map((league) => [league.id, true])),
       search: "",
+      editingArticleId: null,
       loading: false,
       lastSync: null
     };
@@ -1224,6 +1385,7 @@
       upcomingStat: document.getElementById("upcomingStat"),
       playedStat: document.getElementById("playedStat"),
       recentStat: document.getElementById("recentStat"),
+      articleStat: document.getElementById("articleStat"),
       dateLabel: document.getElementById("dateLabel"),
       syncPill: document.getElementById("syncPill"),
       matchList: document.getElementById("matchList"),
@@ -1236,6 +1398,14 @@
       updateText: document.getElementById("updateText"),
       publishUpdateBtn: document.getElementById("publishUpdateBtn"),
       updateList: document.getElementById("updateList"),
+      articleCategory: document.getElementById("articleCategory"),
+      articleTitle: document.getElementById("articleTitle"),
+      articleSummary: document.getElementById("articleSummary"),
+      articleBody: document.getElementById("articleBody"),
+      saveArticleBtn: document.getElementById("saveArticleBtn"),
+      clearArticleBtn: document.getElementById("clearArticleBtn"),
+      articleList: document.getElementById("articleList"),
+      articleCount: document.getElementById("articleCount"),
       phonePreview: document.getElementById("phonePreview"),
       exportBtn: document.getElementById("exportBtn"),
       toast: document.getElementById("toast")
@@ -1307,6 +1477,9 @@
       });
 
       els.publishUpdateBtn.addEventListener("click", publishUpdate);
+      els.saveArticleBtn.addEventListener("click", saveArticle);
+      els.clearArticleBtn.addEventListener("click", clearArticleForm);
+      els.articleList.addEventListener("click", handleArticleAction);
       els.exportBtn.addEventListener("click", exportSnapshot);
     }
 
@@ -1420,6 +1593,7 @@
       els.upcomingStat.textContent = counts.upcoming;
       els.playedStat.textContent = counts.final;
       els.recentStat.textContent = state.recentEvents.length;
+      els.articleStat.textContent = state.articles.length;
       els.dateLabel.textContent = formatDateLabel(state.date);
       els.lastSync.textContent = state.lastSync ? `Last sync ${formatTime(state.lastSync)}` : "Waiting for first sync";
       els.syncPill.textContent = state.loading ? "Syncing" : "Ready";
@@ -1428,6 +1602,7 @@
       renderLeagues();
       renderTeams();
       renderUpdates();
+      renderArticles();
       renderPhonePreview();
     }
 
@@ -1528,6 +1703,30 @@
       `).join("");
     }
 
+    function renderArticles() {
+      els.articleCount.textContent = state.articles.length;
+      if (!state.articles.length) {
+        els.articleList.innerHTML = `<div class="empty">No news or articles saved yet.</div>`;
+        return;
+      }
+
+      els.articleList.innerHTML = state.articles.slice(0, 6).map((article) => `
+        <article class="article-card">
+          <div class="article-meta">
+            <span>${escapeHtml(article.category)}</span>
+            <span>${escapeHtml(articleReadTime(article.body))}</span>
+          </div>
+          <strong title="${escapeAttr(article.title)}">${escapeHtml(article.title)}</strong>
+          <p>${escapeHtml(articleExcerpt(article))}</p>
+          <span>${escapeHtml(relativeMatchTime(article.createdAt))}</span>
+          <div class="article-card-actions">
+            <button class="button" type="button" data-edit-article="${escapeAttr(article.id)}">Edit</button>
+            <button class="button danger" type="button" data-delete-article="${escapeAttr(article.id)}">Delete</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
     function renderPhonePreview() {
       const lead = state.events.find((event) => bucket(event) === "live") || state.events[0] || state.recentEvents[0];
       if (!lead) {
@@ -1580,6 +1779,88 @@
       showToast("Update saved to the admin dashboard.");
     }
 
+    function saveArticle() {
+      const title = els.articleTitle.value.trim();
+      const summary = els.articleSummary.value.trim();
+      const body = els.articleBody.value.trim();
+
+      if (!title || !body) {
+        showToast("Add a headline and article body first.");
+        return;
+      }
+
+      const wasEditing = Boolean(state.editingArticleId);
+      const article = {
+        id: state.editingArticleId || `article-${Date.now()}`,
+        category: els.articleCategory.value,
+        title,
+        summary,
+        body,
+        createdAt: new Date().toISOString(),
+        status: "Draft"
+      };
+
+      if (state.editingArticleId) {
+        const existing = state.articles.find((item) => item.id === state.editingArticleId);
+        article.createdAt = existing?.createdAt || article.createdAt;
+        article.updatedAt = new Date().toISOString();
+        state.articles = state.articles.map((item) => item.id === state.editingArticleId ? article : item);
+      } else {
+        state.articles.unshift(article);
+      }
+      state.articles = state.articles.slice(0, 20);
+      clearArticleForm();
+      saveSettings();
+      render();
+      showToast(wasEditing ? "Article updated." : "Article saved to the dashboard.");
+    }
+
+    function clearArticleForm() {
+      state.editingArticleId = null;
+      els.articleTitle.value = "";
+      els.articleSummary.value = "";
+      els.articleBody.value = "";
+      els.articleCategory.value = "Match Report";
+      els.saveArticleBtn.textContent = "Save Article";
+    }
+
+    function handleArticleAction(event) {
+      const editButton = event.target.closest("[data-edit-article]");
+      const deleteButton = event.target.closest("[data-delete-article]");
+
+      if (editButton) {
+        editArticle(editButton.dataset.editArticle);
+        return;
+      }
+
+      if (deleteButton) {
+        deleteArticle(deleteButton.dataset.deleteArticle);
+      }
+    }
+
+    function editArticle(id) {
+      const article = state.articles.find((item) => item.id === id);
+      if (!article) return;
+      state.editingArticleId = id;
+      els.articleCategory.value = article.category || "Match Report";
+      els.articleTitle.value = article.title || "";
+      els.articleSummary.value = article.summary || "";
+      els.articleBody.value = article.body || "";
+      els.saveArticleBtn.textContent = "Update Article";
+      document.querySelector("#articles")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      showToast("Article loaded for editing.");
+    }
+
+    function deleteArticle(id) {
+      state.articles = state.articles.filter((article) => article.id !== id);
+      if (state.editingArticleId === id) {
+        clearArticleForm();
+      }
+      saveSettings();
+      render();
+      showToast("Article deleted.");
+    }
+
     function exportSnapshot() {
       const snapshot = {
         exportedAt: new Date().toISOString(),
@@ -1595,6 +1876,7 @@
           league: event.leagueName
         })),
         updates: state.updates,
+        articles: state.articles,
         visibleLeagues: state.visibleLeagues
       };
       const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: "application/json" });
@@ -1730,6 +2012,17 @@
         .replace("French Ligue 1", "Ligue 1");
     }
 
+    function articleExcerpt(article) {
+      const text = article.summary || article.body || "";
+      return text.length > 150 ? `${text.slice(0, 147)}...` : text;
+    }
+
+    function articleReadTime(body) {
+      const words = String(body || "").trim().split(/\s+/).filter(Boolean).length;
+      const minutes = Math.max(1, Math.ceil(words / 180));
+      return `${minutes} min read`;
+    }
+
     function initials(value) {
       return String(value || "TBD")
         .split(/\s+/)
@@ -1744,7 +2037,8 @@
       localStorage.setItem("matchpulse-admin", JSON.stringify({
         leagueId: state.leagueId,
         visibleLeagues: state.visibleLeagues,
-        updates: state.updates
+        updates: state.updates,
+        articles: state.articles
       }));
     }
 
