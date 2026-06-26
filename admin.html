@@ -1388,7 +1388,10 @@
               <h3>News & Articles</h3>
               <p>Write match reports, previews, breaking news, and longer stories.</p>
             </div>
-            <span class="pill" id="articleCount">0</span>
+            <div class="panel-actions">
+              <span class="pill" id="backendStatus">Local Draft Mode</span>
+              <span class="pill" id="articleCount">0</span>
+            </div>
           </div>
           <div class="panel-body">
             <div class="article-composer">
@@ -1428,6 +1431,30 @@
                         <button class="button" id="clearArticleBtn" type="button">Clear Draft</button>
                         <button class="button primary" id="saveArticleBtn" type="button">Save Draft</button>
                       </div>
+                    </div>
+                  </div>
+                  <div class="wp-box" id="backendLoginBox" hidden>
+                    <div class="wp-box-head">Backend Login</div>
+                    <div class="wp-box-body">
+                      <div class="field">
+                        <label for="backendEmail">Email</label>
+                        <input class="input" id="backendEmail" type="email" placeholder="admin@example.com" autocomplete="username" />
+                      </div>
+                      <div class="field">
+                        <label for="backendPassword">Password</label>
+                        <input class="input" id="backendPassword" type="password" placeholder="Your admin password" autocomplete="current-password" />
+                      </div>
+                      <button class="button primary" id="backendLoginBtn" type="button">Connect Backend</button>
+                    </div>
+                  </div>
+                  <div class="wp-box" id="backendAccountBox" hidden>
+                    <div class="wp-box-head">Backend Connected</div>
+                    <div class="wp-box-body">
+                      <div class="publish-list">
+                        <span>User <strong id="backendUser">Admin</strong></span>
+                        <span>Storage <strong>MySQL</strong></span>
+                      </div>
+                      <button class="button" id="backendLogoutBtn" type="button">Disconnect</button>
                     </div>
                   </div>
                   <div class="wp-box">
@@ -1581,6 +1608,7 @@
 
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
+    const BACKEND_API_ROOT = new URL("api/", window.location.href).toString();
     const SCORE_TIMEOUT_MS = 5000;
     const RECENT_DAYS = 3;
     const RECENT_LIMIT = 6;
@@ -1606,6 +1634,12 @@
       visibleLeagues: savedSettings.visibleLeagues || Object.fromEntries(LEAGUES.map((league) => [league.id, true])),
       search: "",
       editingArticleId: null,
+      backend: {
+        available: false,
+        authenticated: false,
+        checked: false,
+        user: null
+      },
       loading: false,
       lastSync: null
     };
@@ -1653,6 +1687,14 @@
       articleList: document.getElementById("articleList"),
       articleCount: document.getElementById("articleCount"),
       articleTableCount: document.getElementById("articleTableCount"),
+      backendStatus: document.getElementById("backendStatus"),
+      backendLoginBox: document.getElementById("backendLoginBox"),
+      backendAccountBox: document.getElementById("backendAccountBox"),
+      backendEmail: document.getElementById("backendEmail"),
+      backendPassword: document.getElementById("backendPassword"),
+      backendLoginBtn: document.getElementById("backendLoginBtn"),
+      backendLogoutBtn: document.getElementById("backendLogoutBtn"),
+      backendUser: document.getElementById("backendUser"),
       phonePreview: document.getElementById("phonePreview"),
       exportBtn: document.getElementById("exportBtn"),
       toast: document.getElementById("toast")
@@ -1669,6 +1711,7 @@
       bindEvents();
       render();
       loadDashboard();
+      initBackend();
     }
 
     function bindEvents() {
@@ -1732,7 +1775,122 @@
       els.articleStatus.addEventListener("change", updateArticlePreview);
       els.articleSlug.addEventListener("input", updateArticlePreview);
       document.querySelector(".editor-toolbar").addEventListener("click", handleEditorToolbar);
+      els.backendLoginBtn.addEventListener("click", loginBackend);
+      els.backendLogoutBtn.addEventListener("click", logoutBackend);
       els.exportBtn.addEventListener("click", exportSnapshot);
+    }
+
+    async function initBackend() {
+      try {
+        const health = await backendRequest("health.php", { method: "GET" });
+        state.backend.available = Boolean(health.ok);
+        const session = await backendRequest("me.php", { method: "GET" });
+        state.backend.authenticated = Boolean(session.authenticated);
+        state.backend.user = session.user || null;
+        state.backend.checked = true;
+        if (state.backend.authenticated) {
+          await loadBackendArticles();
+        } else {
+          renderBackendStatus();
+        }
+      } catch (error) {
+        state.backend.available = false;
+        state.backend.authenticated = false;
+        state.backend.checked = true;
+        state.backend.user = null;
+        renderBackendStatus();
+      }
+    }
+
+    async function backendRequest(path, options = {}) {
+      const headers = options.headers || {};
+      const request = {
+        method: options.method || "GET",
+        credentials: "include",
+        headers,
+      };
+
+      if (options.body !== undefined) {
+        request.headers = { "Content-Type": "application/json", ...headers };
+        request.body = JSON.stringify(options.body);
+      }
+
+      const response = await fetch(new URL(path, BACKEND_API_ROOT).toString(), request);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || "Backend request failed.");
+      }
+      return payload;
+    }
+
+    async function loginBackend() {
+      const email = els.backendEmail.value.trim();
+      const password = els.backendPassword.value;
+      if (!email || !password) {
+        showToast("Enter backend email and password.");
+        return;
+      }
+
+      try {
+        const result = await backendRequest("login.php", {
+          method: "POST",
+          body: { email, password }
+        });
+        state.backend.available = true;
+        state.backend.authenticated = true;
+        state.backend.user = result.user || null;
+        els.backendPassword.value = "";
+        await loadBackendArticles();
+        showToast("Backend connected.");
+      } catch (error) {
+        showToast(error.message || "Backend login failed.");
+      }
+    }
+
+    async function logoutBackend() {
+      try {
+        await backendRequest("logout.php", { method: "POST", body: {} });
+      } catch (error) {
+        // Continue with local mode even if the logout request is already expired.
+      }
+      state.backend.authenticated = false;
+      state.backend.user = null;
+      renderBackendStatus();
+      showToast("Backend disconnected. Local draft mode is active.");
+    }
+
+    async function loadBackendArticles() {
+      if (!state.backend.available || !state.backend.authenticated) {
+        renderBackendStatus();
+        return;
+      }
+
+      const result = await backendRequest("articles.php", { method: "GET" });
+      if (Array.isArray(result.articles)) {
+        state.articles = result.articles;
+        saveSettings();
+      }
+      render();
+    }
+
+    function renderBackendStatus() {
+      if (!state.backend.checked) {
+        els.backendStatus.textContent = "Checking Backend";
+        els.backendStatus.className = "pill upcoming";
+      } else if (state.backend.authenticated) {
+        els.backendStatus.textContent = "Backend Connected";
+        els.backendStatus.className = "pill final";
+      } else if (state.backend.available) {
+        els.backendStatus.textContent = "Backend Login Needed";
+        els.backendStatus.className = "pill upcoming";
+      } else {
+        els.backendStatus.textContent = "Local Draft Mode";
+        els.backendStatus.className = "pill";
+      }
+
+      els.backendLoginBox.hidden = !state.backend.available || state.backend.authenticated;
+      els.backendAccountBox.hidden = !state.backend.authenticated;
+      els.backendUser.textContent = state.backend.user?.name || state.backend.user?.email || "Admin";
     }
 
     async function loadDashboard() {
@@ -1854,6 +2012,7 @@
       renderLeagues();
       renderTeams();
       renderUpdates();
+      renderBackendStatus();
       renderArticles();
       renderPhonePreview();
     }
@@ -2022,12 +2181,24 @@
       `;
     }
 
-    function publishUpdate() {
+    async function publishUpdate() {
       const text = els.updateText.value.trim();
       if (!text) {
         showToast("Write an update first.");
         return;
       }
+
+      if (state.backend.authenticated) {
+        try {
+          await backendRequest("updates.php", {
+            method: "POST",
+            body: { title: "Admin update", body: text, type: "info" }
+          });
+        } catch (error) {
+          showToast(`${error.message} Saved locally for now.`);
+        }
+      }
+
       state.updates.unshift({
         text,
         createdAt: new Date().toISOString()
@@ -2039,7 +2210,7 @@
       showToast("Update saved to the admin dashboard.");
     }
 
-    function saveArticle() {
+    async function saveArticle() {
       const title = els.articleTitle.value.trim();
       const summary = els.articleSummary.value.trim();
       const body = els.articleBody.value.trim();
@@ -2062,6 +2233,30 @@
         createdAt: new Date().toISOString(),
         status: els.articleStatus.value
       };
+
+      if (state.backend.authenticated) {
+        try {
+          const result = await backendRequest("articles.php", {
+            method: "POST",
+            body: { action: "save", article }
+          });
+          if (result.article) {
+            state.articles = [
+              result.article,
+              ...state.articles.filter((item) => String(item.id) !== String(result.article.id))
+            ];
+          }
+          clearArticleForm();
+          saveSettings();
+          render();
+          showToast(wasEditing ? "Article updated in MySQL." : "Article saved to MySQL.");
+          return;
+        } catch (error) {
+          showToast(`${error.message} Saved locally for now.`);
+        }
+      } else if (state.backend.available) {
+        showToast("Backend needs login. Saved locally for now.");
+      }
 
       if (state.editingArticleId) {
         const existing = state.articles.find((item) => item.id === state.editingArticleId);
@@ -2122,7 +2317,27 @@
       showToast("Article loaded for editing.");
     }
 
-    function deleteArticle(id) {
+    async function deleteArticle(id) {
+      if (state.backend.authenticated && /^\d+$/.test(String(id))) {
+        try {
+          await backendRequest("articles.php", {
+            method: "POST",
+            body: { action: "delete", id }
+          });
+          state.articles = state.articles.filter((article) => String(article.id) !== String(id));
+          if (state.editingArticleId === id) {
+            clearArticleForm();
+          }
+          saveSettings();
+          render();
+          showToast("Article deleted from MySQL.");
+          return;
+        } catch (error) {
+          showToast(error.message || "Could not delete from backend.");
+          return;
+        }
+      }
+
       state.articles = state.articles.filter((article) => article.id !== id);
       if (state.editingArticleId === id) {
         clearArticleForm();
