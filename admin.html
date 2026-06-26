@@ -459,6 +459,51 @@
       align-items: end;
     }
 
+    .backend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .backend-card {
+      min-width: 0;
+      display: grid;
+      gap: 9px;
+      align-content: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      padding: 14px;
+    }
+
+    .backend-card span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .backend-card strong {
+      color: var(--ink);
+      font-family: var(--display-font);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .backend-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 720;
+    }
+
+    .backend-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
     .field {
       min-width: 0;
       display: grid;
@@ -1203,6 +1248,10 @@
         grid-template-columns: 1fr;
       }
 
+      .backend-grid {
+        grid-template-columns: 1fr;
+      }
+
       .wp-editor-layout {
         grid-template-columns: 1fr;
       }
@@ -1306,6 +1355,7 @@
           <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
           <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
           <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+          <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
           <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
         </nav>
         <div class="nav-card nav-summary">
@@ -1378,6 +1428,38 @@
                 <input class="input" id="dateInput" type="date" />
               </div>
               <button class="button primary" id="loadBtn" type="button">Load Games</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel section" id="backend">
+          <div class="panel-head">
+            <div class="panel-title">
+              <h3>Backend Access</h3>
+              <p>Admin login and storage status for articles, updates, and uploads.</p>
+            </div>
+            <span class="pill" id="backendAccessStatus">Checking Backend</span>
+          </div>
+          <div class="panel-body">
+            <div class="backend-grid">
+              <div class="backend-card">
+                <span>Admin dashboard</span>
+                <strong>admin.html</strong>
+                <p>Use this screen to manage games, short updates, and news articles.</p>
+                <div class="backend-actions">
+                  <a class="button" href="admin.html">Open Admin</a>
+                  <a class="button" href="index.html">View Site</a>
+                </div>
+              </div>
+              <div class="backend-card">
+                <span>Backend engine</span>
+                <strong id="backendEngineLabel">api/health.php</strong>
+                <p id="backendAccessNote">Checking PHP and database connection.</p>
+                <div class="backend-actions">
+                  <a class="button" href="api/health.php" target="_blank" rel="noreferrer">Check Engine</a>
+                  <a class="button" href="BACKEND_SETUP.md" target="_blank" rel="noreferrer">Setup Guide</a>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1688,6 +1770,9 @@
       articleCount: document.getElementById("articleCount"),
       articleTableCount: document.getElementById("articleTableCount"),
       backendStatus: document.getElementById("backendStatus"),
+      backendAccessStatus: document.getElementById("backendAccessStatus"),
+      backendEngineLabel: document.getElementById("backendEngineLabel"),
+      backendAccessNote: document.getElementById("backendAccessNote"),
       backendLoginBox: document.getElementById("backendLoginBox"),
       backendAccountBox: document.getElementById("backendAccountBox"),
       backendEmail: document.getElementById("backendEmail"),
@@ -1874,20 +1959,34 @@
     }
 
     function renderBackendStatus() {
+      let statusText = "Local Draft Mode";
+      let statusClass = "pill";
+      let engineLabel = "Backend not active here";
+      let accessNote = "The GitHub Pages version cannot run PHP. Deploy to cPanel or VPS to turn on MySQL storage.";
+
       if (!state.backend.checked) {
-        els.backendStatus.textContent = "Checking Backend";
-        els.backendStatus.className = "pill upcoming";
+        statusText = "Checking Backend";
+        statusClass = "pill upcoming";
+        engineLabel = "api/health.php";
+        accessNote = "Checking whether the PHP backend is reachable.";
       } else if (state.backend.authenticated) {
-        els.backendStatus.textContent = "Backend Connected";
-        els.backendStatus.className = "pill final";
+        statusText = "Backend Connected";
+        statusClass = "pill final";
+        engineLabel = "MySQL connected";
+        accessNote = "Connected to MySQL. Published articles can appear on the public site.";
       } else if (state.backend.available) {
-        els.backendStatus.textContent = "Backend Login Needed";
-        els.backendStatus.className = "pill upcoming";
-      } else {
-        els.backendStatus.textContent = "Local Draft Mode";
-        els.backendStatus.className = "pill";
+        statusText = "Backend Login Needed";
+        statusClass = "pill upcoming";
+        engineLabel = "PHP online";
+        accessNote = "The backend engine is online. Log in inside News & Articles to save to MySQL.";
       }
 
+      els.backendStatus.textContent = statusText;
+      els.backendStatus.className = statusClass;
+      els.backendAccessStatus.textContent = statusText;
+      els.backendAccessStatus.className = statusClass;
+      els.backendEngineLabel.textContent = engineLabel;
+      els.backendAccessNote.textContent = accessNote;
       els.backendLoginBox.hidden = !state.backend.available || state.backend.authenticated;
       els.backendAccountBox.hidden = !state.backend.authenticated;
       els.backendUser.textContent = state.backend.user?.name || state.backend.user?.email || "Admin";
