@@ -5694,7 +5694,7 @@
 
           <div class="panel">
             <div class="panel-head">
-              <h3>Watched Games</h3>
+              <h3>Games We Watched</h3>
               <span id="watchedCount" class="status-pill">0</span>
             </div>
             <div class="panel-body" id="watchedGames"></div>
@@ -6517,7 +6517,6 @@
       const league = getSelectedLeague();
       const visible = getVisibleEvents();
       const counts = getCounts(state.events);
-      const liveEvents = state.events.filter((event) => bucket(event) === "live");
       const sourceLeague = league.all ? LEAGUES.find((item) => item.id === "world-cup") : league;
 
       els.scoreboardTitle.textContent = league.label;
@@ -6536,7 +6535,7 @@
       renderLeagueBoard();
       renderTeams(state.events);
       renderMatches(visible);
-      renderWatched(liveEvents.length ? liveEvents : state.events.slice(0, 4));
+      renderWatched(getWatchedEvents(state.events));
       renderUpdateLog();
       renderCountdown();
     }
@@ -6846,7 +6845,7 @@
     function renderWatched(events) {
       els.watchedCount.textContent = events.length;
       if (!events.length) {
-        els.watchedGames.innerHTML = `<div class="empty"><strong>No watched games</strong>Live games will appear here first.</div>`;
+        els.watchedGames.innerHTML = `<div class="empty"><strong>No games watched yet</strong>Played games with final scores will appear here.</div>`;
         return;
       }
 
@@ -6859,6 +6858,12 @@
           </div>
         </div>
       `).join("");
+    }
+
+    function getWatchedEvents(events) {
+      return [...events]
+        .filter((event) => bucket(event) === "final")
+        .sort(sortEvents);
     }
 
     function renderUpdateLog() {
