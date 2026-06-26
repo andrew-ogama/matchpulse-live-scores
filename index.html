@@ -5472,6 +5472,101 @@
         scroll-margin-top: 106px;
       }
     }
+
+    /* Mobile overflow guard */
+    @media (max-width: 580px) {
+      html,
+      body,
+      .app {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        min-width: 0;
+      }
+
+      main,
+      .topbar-inner,
+      .scoreboard-shell,
+      .toolbar,
+      .toolbar-row,
+      .match-grid,
+      .match-card,
+      .match-body,
+      .match-footer,
+      .match-drawer,
+      .side-panel,
+      .panel,
+      .panel-body,
+      .team-list,
+      .watch-item,
+      .update-list,
+      .live-card {
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      .scoreboard-shell > *,
+      .toolbar-row > *,
+      .match-card *,
+      .side-panel * {
+        min-width: 0;
+      }
+
+      main {
+        width: min(100% - 12px, 430px);
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .league-board {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        box-sizing: border-box;
+      }
+
+      .league-tile {
+        max-width: calc(100vw - 24px);
+      }
+
+      .toolbar-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .toolbar-row .field:nth-child(2),
+      .toolbar-row .field:nth-child(3),
+      .toolbar-row .field:nth-child(4) {
+        grid-column: 1 / -1;
+      }
+
+      .date-actions {
+        width: 100%;
+        grid-template-columns: 40px 40px minmax(0, 1fr);
+      }
+
+      .control,
+      .search,
+      .today-button {
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .match-body {
+        grid-template-columns: minmax(0, 1fr) minmax(68px, 76px) minmax(0, 1fr);
+      }
+
+      .mobile-nav {
+        box-sizing: border-box;
+        max-width: calc(100% - 16px);
+      }
+    }
   </style>
 </head>
 <body>
