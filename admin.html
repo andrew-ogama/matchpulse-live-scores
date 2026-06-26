@@ -172,6 +172,12 @@
       background: var(--blue);
     }
 
+    .button.publish {
+      color: #fff;
+      background: var(--red);
+      box-shadow: 0 12px 24px rgba(255, 63, 79, 0.18);
+    }
+
     .button.ghost {
       color: #fff;
       border-color: rgba(255, 255, 255, 0.28);
@@ -1514,7 +1520,8 @@
                       </div>
                       <div class="article-status-actions">
                         <button class="button" id="clearArticleBtn" type="button">Clear Draft</button>
-                        <button class="button primary" id="saveArticleBtn" type="button">Save Draft</button>
+                        <button class="button" id="saveArticleBtn" type="button">Save Draft</button>
+                        <button class="button publish" id="publishArticleBtn" type="button">Publish Article</button>
                       </div>
                     </div>
                   </div>
@@ -1768,6 +1775,7 @@
       articleStatusPreview: document.getElementById("articleStatusPreview"),
       articleReadTimePreview: document.getElementById("articleReadTimePreview"),
       saveArticleBtn: document.getElementById("saveArticleBtn"),
+      publishArticleBtn: document.getElementById("publishArticleBtn"),
       clearArticleBtn: document.getElementById("clearArticleBtn"),
       articleList: document.getElementById("articleList"),
       articleCount: document.getElementById("articleCount"),
@@ -1856,6 +1864,7 @@
 
       els.publishUpdateBtn.addEventListener("click", publishUpdate);
       els.saveArticleBtn.addEventListener("click", saveArticle);
+      els.publishArticleBtn.addEventListener("click", publishArticle);
       els.clearArticleBtn.addEventListener("click", clearArticleForm);
       els.articleList.addEventListener("click", handleArticleAction);
       els.articleTitle.addEventListener("input", updateArticlePreview);
@@ -2312,6 +2321,12 @@
       showToast("Update saved to the admin dashboard.");
     }
 
+    function publishArticle() {
+      els.articleStatus.value = "Published";
+      updateArticlePreview();
+      saveArticle();
+    }
+
     async function saveArticle() {
       const title = els.articleTitle.value.trim();
       const summary = els.articleSummary.value.trim();
@@ -2416,7 +2431,7 @@
       els.articleStatus.value = article.status || "Draft";
       els.articleTags.value = article.tags || "";
       els.articleSlug.value = article.slug || slugify(article.title);
-      els.saveArticleBtn.textContent = "Update Draft";
+      els.saveArticleBtn.textContent = "Save Changes";
       updateArticlePreview();
       document.querySelector("#articles")?.scrollIntoView({ behavior: "smooth", block: "start" });
       showToast("Article loaded for editing.");
@@ -2457,7 +2472,7 @@
       els.articleSlugPreview.textContent = slug;
       els.articleStatusPreview.textContent = els.articleStatus.value || "Draft";
       els.articleReadTimePreview.textContent = articleReadTime(els.articleBody.value);
-      els.saveArticleBtn.textContent = els.articleStatus.value === "Published" ? "Publish Article" : "Save Draft";
+      els.saveArticleBtn.textContent = state.editingArticleId ? "Save Changes" : "Save Draft";
     }
 
     function handleEditorToolbar(event) {
