@@ -273,24 +273,31 @@
 
     .sticky-jumpbar {
       position: fixed;
-      top: 82px;
-      left: 50%;
-      z-index: 35;
-      width: min(100% - 32px, 1180px);
-      transform: translate(-50%, -18px);
+      top: 72px;
+      left: 0;
+      z-index: 38;
+      width: 100%;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(227, 232, 240, 0.9);
+      background: rgba(244, 246, 250, 0.94);
+      box-shadow: 0 14px 30px rgba(21, 27, 40, 0.08);
+      backdrop-filter: blur(14px);
+      transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
       transition: transform 180ms ease, opacity 180ms ease;
     }
 
     .sticky-jumpbar .nav-card {
+      width: min(100% - 32px, 1180px);
+      margin: 0 auto;
       display: flex;
       gap: 8px;
       overflow-x: auto;
       padding: 8px;
       border-color: rgba(227, 232, 240, 0.94);
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(14px);
+      background: #fff;
+      box-shadow: none;
       scrollbar-width: none;
     }
 
@@ -306,7 +313,7 @@
     }
 
     .admin-app.nav-is-sticky .sticky-jumpbar {
-      transform: translate(-50%, 0);
+      transform: translateY(0);
       opacity: 1;
       pointer-events: auto;
     }
@@ -1214,18 +1221,12 @@
     }
 
     @media (max-width: 1020px) {
-      .sticky-jumpbar {
-        display: none;
-      }
-
       .admin-shell {
         grid-template-columns: 1fr;
       }
 
       .sidebar {
-        position: sticky;
-        top: 72px;
-        z-index: 30;
+        position: static;
         overflow-x: auto;
         padding-bottom: 2px;
         scrollbar-width: none;
@@ -1235,7 +1236,7 @@
         display: none;
       }
 
-      .nav-card {
+      .sidebar .nav-card {
         min-width: max-content;
         display: flex;
         gap: 8px;
@@ -1267,6 +1268,22 @@
 
       .topbar-inner {
         min-height: 64px;
+      }
+
+      .sticky-jumpbar {
+        top: 64px;
+        padding: 6px 0;
+      }
+
+      .sticky-jumpbar .nav-card {
+        width: min(100% - 20px, 460px);
+        min-width: 0;
+        padding: 7px;
+      }
+
+      .sticky-jumpbar .nav-button {
+        min-height: 36px;
+        padding: 0 10px;
       }
 
       .brand h1 {
@@ -1373,7 +1390,7 @@
         margin-right: -10px;
       }
 
-      .nav-card {
+      .sidebar .nav-card {
         padding-left: 10px;
         padding-right: 10px;
         border-left: 0;
@@ -1955,7 +1972,7 @@
     }
 
     function updateStickyJumpbar() {
-      const shouldStick = window.innerWidth > 1020 && window.scrollY > 260;
+      const shouldStick = window.scrollY > 260;
       els.app.classList.toggle("nav-is-sticky", shouldStick);
     }
 
