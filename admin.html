@@ -513,6 +513,10 @@
       margin-top: 4px;
     }
 
+    .source-card {
+      margin-top: 12px;
+    }
+
     .field {
       min-width: 0;
       display: grid;
@@ -1438,6 +1442,14 @@
               </div>
               <button class="button primary" id="loadBtn" type="button">Load Games</button>
             </div>
+            <div class="backend-card source-card">
+              <span>Data source</span>
+              <strong>ESPN scoreboard feed</strong>
+              <p>This feed powers scores, fixtures, match status, teams, venues, and the public match cards.</p>
+              <div class="backend-actions">
+                <a class="button" id="adminSourceLink" href="https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard" target="_blank" rel="noreferrer">Open Current Feed</a>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1741,6 +1753,7 @@
       loadBtn: document.getElementById("loadBtn"),
       leagueSelect: document.getElementById("leagueSelect"),
       dateInput: document.getElementById("dateInput"),
+      adminSourceLink: document.getElementById("adminSourceLink"),
       matchSearch: document.getElementById("matchSearch"),
       feedDot: document.getElementById("feedDot"),
       feedText: document.getElementById("feedText"),
@@ -2118,6 +2131,7 @@
       els.dateLabel.textContent = formatDateLabel(state.date);
       els.lastSync.textContent = state.lastSync ? `Last sync ${formatTime(state.lastSync)}` : "Waiting for first sync";
       els.syncPill.textContent = state.loading ? "Syncing" : "Ready";
+      els.adminSourceLink.href = buildScoreboardUrl(league, state.date);
       renderMatches();
       renderWatched();
       renderLeagues();

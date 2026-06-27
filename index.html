@@ -5775,10 +5775,6 @@
                 </div>
                 <div class="pulse-track wide" aria-hidden="true"><span id="sideCountdownFill"></span></div>
               </div>
-              <p class="source">
-                Scores and match details come from the
-                <a id="sourceLink" href="https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard" target="_blank" rel="noreferrer">ESPN scoreboard feed</a>.
-              </p>
             </div>
           </div>
         </aside>
@@ -5864,8 +5860,7 @@
       sideCountdown: document.getElementById("sideCountdown"),
       sideCountdownFill: document.getElementById("sideCountdownFill"),
       connectionDot: document.getElementById("connectionDot"),
-      connectionText: document.getElementById("connectionText"),
-      sourceLink: document.getElementById("sourceLink")
+      connectionText: document.getElementById("connectionText")
     };
 
     init();
@@ -6660,11 +6655,9 @@
       const league = getSelectedLeague();
       const visible = getVisibleEvents();
       const counts = getCounts(state.events);
-      const sourceLeague = league.all ? LEAGUES.find((item) => item.id === "world-cup") : league;
 
       els.scoreboardTitle.textContent = league.label;
       els.scoreboardSubtitle.textContent = subtitleText(visible.length, state.events.length);
-      els.sourceLink.href = buildScoreboardUrl(sourceLeague);
       els.totalStat.textContent = state.events.length;
       els.liveStat.textContent = counts.live;
       els.upcomingStat.textContent = counts.upcoming;
