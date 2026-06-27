@@ -1,4 +1,5 @@
 api/config.php
+matchpulse-cpanel-upload.zip
 uploads/*
 !uploads/.gitkeep
 !uploads/.htaccess
