@@ -273,13 +273,18 @@
     }
 
     .sticky-jumpbar {
+      position: fixed;
+      top: 72px;
+      left: 0;
+      z-index: 39;
       width: 100%;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
       padding: 0 0 10px;
+      background: var(--red);
+      box-shadow: 0 18px 28px rgba(255, 63, 79, 0.16);
+      transform: translateY(-14px);
+      opacity: 0;
       pointer-events: none;
-      transition: max-height 180ms ease, opacity 180ms ease;
+      transition: transform 180ms ease, opacity 180ms ease;
     }
 
     .sticky-jumpbar .nav-card {
@@ -323,7 +328,7 @@
     }
 
     .admin-app.nav-is-sticky .sticky-jumpbar {
-      max-height: 86px;
+      transform: translateY(0);
       opacity: 1;
       pointer-events: auto;
     }
@@ -1280,6 +1285,11 @@
         min-height: 64px;
       }
 
+      .sticky-jumpbar {
+        top: 64px;
+        padding-bottom: 8px;
+      }
+
       .sticky-jumpbar .nav-card {
         width: min(100% - 20px, 460px);
         min-width: 0;
@@ -1421,19 +1431,20 @@
           <button class="button primary" id="refreshBtn" type="button">Refresh</button>
         </div>
       </div>
-      <nav class="sticky-jumpbar" aria-label="Sticky admin navigation">
-        <div class="nav-card">
-          <button class="nav-button is-active" type="button" data-jump="#overview"><span>O</span>Overview</button>
-          <button class="nav-button" type="button" data-jump="#matches"><span>M</span>Matches</button>
-          <button class="nav-button" type="button" data-jump="#watched"><span>W</span>Watched</button>
-          <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
-          <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
-          <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
-          <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
-          <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
-        </div>
-      </nav>
     </header>
+
+    <nav class="sticky-jumpbar" aria-label="Sticky admin navigation">
+      <div class="nav-card">
+        <button class="nav-button is-active" type="button" data-jump="#overview"><span>O</span>Overview</button>
+        <button class="nav-button" type="button" data-jump="#matches"><span>M</span>Matches</button>
+        <button class="nav-button" type="button" data-jump="#watched"><span>W</span>Watched</button>
+        <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
+        <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
+        <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+        <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
+        <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
+      </div>
+    </nav>
 
     <div class="admin-shell">
       <aside class="sidebar" aria-label="Admin navigation">
@@ -1976,7 +1987,7 @@
     }
 
     function updateStickyJumpbar() {
-      const shouldStick = window.scrollY > 260;
+      const shouldStick = window.scrollY > 96;
       els.app.classList.toggle("nav-is-sticky", shouldStick);
     }
 
