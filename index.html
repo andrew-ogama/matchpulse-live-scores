@@ -642,6 +642,22 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .watch-detail {
+      border-color: rgba(84, 135, 255, 0.32);
+      background:
+        linear-gradient(135deg, rgba(84, 135, 255, 0.16), rgba(242, 59, 85, 0.09)),
+        #11151b;
+    }
+
+    .watch-detail span {
+      color: var(--blue-2);
+    }
+
+    .watch-detail strong {
+      color: #ffffff;
+      font-weight: 900;
+    }
+
     .side-panel {
       display: grid;
       gap: 14px;
@@ -1918,6 +1934,13 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 12px;
       align-items: center;
+    }
+
+    .watch-card {
+      border-color: rgba(84, 135, 255, 0.28);
+      background:
+        linear-gradient(135deg, rgba(84, 135, 255, 0.12), rgba(242, 59, 85, 0.07)),
+        rgba(255, 255, 255, 0.035);
     }
 
     .stadium-card span,
@@ -6822,6 +6845,7 @@
         type === "live" ? "is-live" : "",
         state.updatedIds.has(event.id) ? "is-updated" : ""
       ].filter(Boolean).join(" ");
+      const watchText = whereToWatchText(event);
 
       return `
         <article class="${cardClasses}">
@@ -6846,13 +6870,9 @@
             <span>Highlights</span>
           </div>
           <div class="match-footer">
-            <div class="detail">
-              <span>Stadia</span>
-              <strong title="${escapeAttr(event.venue)}">${escapeHtml(event.venue)}</strong>
-            </div>
-            <div class="detail">
-              <span>Broadcast</span>
-              <strong title="${escapeAttr(event.broadcast)}">${escapeHtml(event.broadcast)}</strong>
+            <div class="detail watch-detail">
+              <span>Where to Watch</span>
+              <strong title="${escapeAttr(watchText)}">${escapeHtml(watchText)}</strong>
             </div>
             <div class="detail timer-detail">
               <span>Timer</span>
@@ -6865,13 +6885,18 @@
               >${escapeHtml(timerText(event))}</strong>
             </div>
             <div class="detail">
+              <span>Stadia</span>
+              <strong title="${escapeAttr(event.venue)}">${escapeHtml(event.venue)}</strong>
+            </div>
+            <div class="detail">
               <span>Stage</span>
               <strong title="${escapeAttr(event.note || event.statusDetail)}">${escapeHtml(event.note || event.statusDetail)}</strong>
             </div>
           </div>
           <details class="match-drawer">
-            <summary>Stats, scorers, played players and stadia</summary>
+            <summary>Stats, scorers, players, stadia and where to watch</summary>
             <div class="match-intel">
+              ${watchMarkup(event)}
               ${stadiumMarkup(event)}
               ${matchRecordMarkup(event)}
               <div class="lineup-grid">
@@ -6881,6 +6906,27 @@
             </div>
           </details>
         </article>
+      `;
+    }
+
+    function whereToWatchText(event) {
+      const value = String(event.broadcast || "").trim();
+      return value && value !== "Check local listings"
+        ? value
+        : "Check official TV and streaming listings";
+    }
+
+    function watchMarkup(event) {
+      const watchText = whereToWatchText(event);
+      return `
+        <div class="stadium-card watch-card">
+          <div>
+            <span>Where to Watch</span>
+            <strong>${escapeHtml(watchText)}</strong>
+            <small>Availability can vary by country and broadcaster.</small>
+          </div>
+          <div class="stadium-badge">WATCH</div>
+        </div>
       `;
     }
 
