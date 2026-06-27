@@ -568,13 +568,6 @@
       text-transform: uppercase;
     }
 
-    .team-record {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
     .score-block {
       min-height: 104px;
       display: grid;
@@ -5449,13 +5442,6 @@
         display: none;
       }
 
-      .team-record {
-        display: block;
-        margin-top: 2px;
-        font-size: 9px;
-        line-height: 1.1;
-      }
-
       .score-block {
         min-height: 56px;
         border-radius: 8px;
@@ -6972,14 +6958,9 @@
           <div>
             <div class="team-name">${escapeHtml(team.name)}</div>
             <div class="team-meta">${escapeHtml(label)} - ${escapeHtml(team.abbreviation)}</div>
-            <div class="team-record">${escapeHtml(teamRecordText(team))}</div>
           </div>
         </div>
       `;
-    }
-
-    function teamRecordText(team) {
-      return team.record ? `Record ${team.record}` : "Record N/A";
     }
 
     function teamLogoMarkup(team) {
