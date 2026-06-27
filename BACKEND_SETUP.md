@@ -7,6 +7,7 @@ This backend is designed to work on both cPanel hosting and a VPS.
 - Admin login API
 - Article/news create, edit, delete, publish API
 - Match update API
+- SEO, socials, and public pages settings API
 - Image upload API
 - MySQL database tables
 - Local browser fallback when the PHP API is not available
@@ -16,6 +17,7 @@ This backend is designed to work on both cPanel hosting and a VPS.
 - `api/config.example.php` - copy this to `api/config.php` and add your real database details.
 - `database/schema.sql` - import this into MySQL.
 - `api/articles.php` - articles/news API.
+- `api/settings.php` - SEO, socials, and public pages API.
 - `api/login.php`, `api/logout.php`, `api/me.php` - admin auth.
 - `api/create-admin.php` - one-time admin creator using your private setup key.
 - `api/upload.php` - authenticated image upload endpoint.
@@ -46,7 +48,7 @@ With JSON:
 
 After the admin is created, change the `setup_key` again or remove it.
 
-7. Open `admin.html`. If the PHP backend is reachable, the News & Articles panel will show **Backend Login**. Log in with the admin email/password to save articles into MySQL.
+7. Open `admin.html`. If the PHP backend is reachable, the News & Articles panel will show **Backend Login**. Log in with the admin email/password to save articles, SEO settings, socials, and pages into MySQL.
 
 ## Setup On VPS
 

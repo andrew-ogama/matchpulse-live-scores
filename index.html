@@ -5761,6 +5761,16 @@
 
           <div class="panel">
             <div class="panel-head">
+              <h3>Site Pages</h3>
+              <span id="pageLinkCount" class="status-pill">0</span>
+            </div>
+            <div class="panel-body">
+              <div class="article-list" id="pageLinks"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
               <h3>Update Log</h3>
               <span class="status-pill" id="lastUpdated">Waiting</span>
             </div>
@@ -5838,7 +5848,8 @@
       watchedRequestId: 0,
       articles: [],
       articlesLoading: false,
-      articlesAvailable: false
+      articlesAvailable: false,
+      pages: []
     };
 
     const els = {
@@ -5864,6 +5875,8 @@
       watchedCount: document.getElementById("watchedCount"),
       articleList: document.getElementById("articleList"),
       articleCount: document.getElementById("articleCount"),
+      pageLinks: document.getElementById("pageLinks"),
+      pageLinkCount: document.getElementById("pageLinkCount"),
       updateLog: document.getElementById("updateLog"),
       lastUpdated: document.getElementById("lastUpdated"),
       refreshCountdown: document.getElementById("refreshCountdown"),
@@ -5878,6 +5891,7 @@
 
     function init() {
       applySavedSeoSettings();
+      loadSiteSettings();
       els.leagueSelect.innerHTML = LEAGUES.map((league) => (
         `<option value="${league.id}">${escapeHtml(league.label)}</option>`
       )).join("");
@@ -7045,7 +7059,33 @@
 
     function applySavedSeoSettings() {
       const saved = readLocalAdminSettings();
-      const seo = { ...DEFAULT_SITE_SEO, ...(saved.seo || {}) };
+      applySeoSettings(saved.seo || {});
+      state.pages = localPreviewPages(saved);
+      renderPageLinks();
+    }
+
+    async function loadSiteSettings() {
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_API_ROOT}settings.php`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        }, 2500);
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (payload.seo) {
+          applySeoSettings(payload.seo);
+        }
+        if (Array.isArray(payload.pages)) {
+          state.pages = payload.pages;
+          renderPageLinks();
+        }
+      } catch (error) {
+        // GitHub Pages cannot run PHP, so local SEO settings remain the fallback.
+      }
+    }
+
+    function applySeoSettings(settings) {
+      const seo = { ...DEFAULT_SITE_SEO, ...(settings || {}) };
       const title = seo.title || DEFAULT_SITE_SEO.title;
       const description = seo.description || DEFAULT_SITE_SEO.description;
       const socialTitle = seo.socialTitle || title;
@@ -7122,6 +7162,45 @@
           ...article,
           localPreview: (article.status || "Draft") !== "Published"
         }));
+    }
+
+    function localPreviewPages(saved = readLocalAdminSettings()) {
+      const pages = Array.isArray(saved.pages) ? saved.pages : [];
+      return pages
+        .filter((page) => page && page.title && page.body && (page.status || "Draft") === "Published")
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+        .slice(0, 6);
+    }
+
+    function renderPageLinks() {
+      if (!els.pageLinks) return;
+      els.pageLinkCount.textContent = state.pages.length;
+
+      if (!state.pages.length) {
+        els.pageLinks.innerHTML = `<div class="empty"><strong>No pages yet</strong>Published admin pages will appear here.</div>`;
+        return;
+      }
+
+      els.pageLinks.innerHTML = state.pages.map((page) => {
+        const title = page.title || "Site page";
+        const summary = page.summary || pageExcerpt(page.body);
+        const link = page.slug ? `page.html?slug=${encodeURIComponent(page.slug)}` : "page.html";
+        return `
+          <a class="article-item" href="${escapeAttr(link)}">
+            <span class="article-kicker">
+              <span>Page</span>
+              <span>${escapeHtml(page.status || "Published")}</span>
+            </span>
+            <strong>${escapeHtml(title)}</strong>
+            <p class="article-summary">${escapeHtml(summary)}</p>
+          </a>
+        `;
+      }).join("");
+    }
+
+    function pageExcerpt(body) {
+      const text = String(body || "").replace(/\s+/g, " ").trim();
+      return text.length > 96 ? `${text.slice(0, 93)}...` : text || "Open this MatchPulse page.";
     }
 
     function readLocalAdminArticles() {

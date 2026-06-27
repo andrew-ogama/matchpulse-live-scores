@@ -418,7 +418,7 @@
           throw new Error("Article not found");
         }
 
-        renderArticle(payload.article);
+        renderArticle(payload.article, await loadSiteSeoSettings());
       } catch (error) {
         const localArticle = findLocalArticle(slug);
         if (localArticle) {
@@ -444,7 +444,7 @@
       }
     }
 
-    function renderArticle(article) {
+    function renderArticle(article, siteSeo = null) {
       const title = article.title || "MatchPulse Article";
       const description = article.summary || articleExcerpt(article.body);
       document.title = `${title} - MatchPulse`;
@@ -454,7 +454,7 @@
       els.published.textContent = article.localPreview ? "Saved locally" : formatDate(article.publishedAt || article.updatedAt || article.createdAt);
       els.tags.textContent = article.tags || "MatchPulse";
       els.body.innerHTML = renderBody(article.body || article.summary || "");
-      setArticleSeo(article, title, description);
+      setArticleSeo(article, title, description, siteSeo);
 
       if (article.featuredImage) {
         els.hero.classList.add("has-image");
@@ -462,9 +462,23 @@
       }
     }
 
-    function setArticleSeo(article, title, description) {
+    async function loadSiteSeoSettings() {
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_API_ROOT}settings.php`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        }, 2500);
+        if (!response.ok) return null;
+        const payload = await response.json();
+        return payload.seo || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setArticleSeo(article, title, description, siteSeo = null) {
       const saved = readLocalAdminSettings();
-      const seo = saved.seo || {};
+      const seo = siteSeo || saved.seo || {};
       const url = new URL(window.location.href).toString();
       const image = article.featuredImage || seo.shareImage || "";
 

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchPulse Page</title>
+  <meta name="description" content="Read MatchPulse site information and public pages." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#ff3d52" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MatchPulse" />
+  <meta property="og:title" content="MatchPulse Page" />
+  <meta property="og:description" content="Read MatchPulse site information and public pages." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MatchPulse Page" />
+  <meta name="twitter:description" content="Read MatchPulse site information and public pages." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page: #f4f5f8;
+      --surface: #ffffff;
+      --surface-2: #f8f9fc;
+      --line: #e1e6ef;
+      --text: #151923;
+      --muted: #778195;
+      --red: #ff3d52;
+      --blue: #376bff;
+      --blue-soft: #edf3ff;
+      --shadow: 0 18px 50px rgba(25, 31, 44, 0.1);
+      --radius: 8px;
+      --display-font: "Space Grotesk", "Manrope", ui-sans-serif, system-ui, sans-serif;
+      --body-font: "Manrope", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--page);
+      color: var(--text);
+      font-family: var(--body-font);
+      line-height: 1.65;
+    }
+
+    body {
+      min-width: 320px;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--red);
+      color: #ffffff;
+      box-shadow: 0 16px 38px rgba(255, 61, 82, 0.18);
+    }
+
+    .topbar-inner {
+      width: min(980px, calc(100% - 28px));
+      min-height: 72px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand,
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--red);
+      background: #ffffff;
+      font-weight: 950;
+    }
+
+    .brand strong {
+      display: block;
+      font-family: var(--display-font);
+      font-size: 22px;
+      line-height: 1.05;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .nav-link {
+      min-height: 38px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
+      padding: 0 13px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .shell {
+      width: min(980px, calc(100% - 28px));
+      margin: 24px auto 40px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero,
+    .content-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: clamp(24px, 5vw, 46px);
+      display: grid;
+      gap: 12px;
+    }
+
+    .kicker {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--display-font);
+      font-size: clamp(32px, 6vw, 58px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 750;
+    }
+
+    .content-card {
+      padding: clamp(20px, 5vw, 42px);
+    }
+
+    .page-body {
+      max-width: 760px;
+      display: grid;
+      gap: 16px;
+      font-size: 17px;
+      font-weight: 650;
+    }
+
+    .page-body p,
+    .page-body ul,
+    .page-body blockquote {
+      margin: 0;
+    }
+
+    .page-body h2 {
+      margin: 10px 0 0;
+      font-family: var(--display-font);
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .page-body ul {
+      padding-left: 22px;
+    }
+
+    .page-body blockquote {
+      border-left: 4px solid var(--red);
+      padding: 12px 16px;
+      color: var(--muted);
+      background: var(--surface-2);
+      font-weight: 800;
+    }
+
+    .status-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      color: var(--muted);
+      background: var(--surface-2);
+      font-weight: 800;
+    }
+
+    .status-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-family: var(--display-font);
+      font-size: 22px;
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner {
+        width: min(100% - 20px, 980px);
+      }
+
+      .nav-link {
+        padding: 0 10px;
+        font-size: 13px;
+      }
+
+      .shell {
+        width: min(100% - 20px, 980px);
+        margin-top: 14px;
+      }
+
+      .hero,
+      .content-card {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">MP</span>
+        <span>
+          <strong>MatchPulse</strong>
+          <span>Live football match centre</span>
+        </span>
+      </a>
+      <a class="nav-link" href="index.html">Scores</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <span class="kicker" id="pageStatus">Page</span>
+      <h1 id="pageTitle">Loading page</h1>
+      <p class="summary" id="pageSummary">Checking MatchPulse pages.</p>
+    </section>
+
+    <article class="content-card">
+      <div class="page-body" id="pageBody">
+        <div class="status-box"><strong>Loading</strong>Please wait while this page opens.</div>
+      </div>
+    </article>
+  </main>
+
+  <script>
+    const BACKEND_API_ROOT = new URL("api/", window.location.href).toString();
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug") || "";
+
+    const els = {
+      title: document.getElementById("pageTitle"),
+      summary: document.getElementById("pageSummary"),
+      status: document.getElementById("pageStatus"),
+      body: document.getElementById("pageBody")
+    };
+
+    loadPage();
+
+    async function loadPage() {
+      if (!slug) {
+        showMissing("No page selected", "Open a page from the Site Pages section on the scores page.");
+        return;
+      }
+
+      const backendPage = await findBackendPage(slug);
+      const page = backendPage || findLocalPage(slug);
+
+      if (!page) {
+        showMissing("Page not available yet", "This page will appear here once it is published from the admin dashboard.");
+        return;
+      }
+
+      renderPage(page);
+    }
+
+    async function findBackendPage(slugValue) {
+      try {
+        const response = await fetchWithTimeout(`${BACKEND_API_ROOT}settings.php`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        }, 3500);
+        if (!response.ok) return null;
+        const payload = await response.json();
+        const pages = Array.isArray(payload.pages) ? payload.pages : [];
+        return pages.find((page) => page.slug === slugValue) || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 3500) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    function renderPage(page) {
+      const title = page.title || "MatchPulse Page";
+      const summary = page.summary || pageExcerpt(page.body);
+      document.title = `${title} - MatchPulse`;
+      els.title.textContent = title;
+      els.summary.textContent = summary;
+      els.status.textContent = page.status || "Page";
+      els.body.innerHTML = renderBody(page.body || summary);
+      setPageSeo(page, title, summary);
+    }
+
+    function setPageSeo(page, title, description) {
+      const url = new URL(window.location.href).toString();
+      setMetaContent("name", "description", description);
+      setMetaContent("property", "og:title", `${title} - MatchPulse`);
+      setMetaContent("property", "og:description", description);
+      setMetaContent("property", "og:url", url);
+      setMetaContent("name", "twitter:title", `${title} - MatchPulse`);
+      setMetaContent("name", "twitter:description", description);
+      setCanonicalUrl(url);
+      setJsonLd({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: title,
+        description,
+        url,
+        dateModified: page.updatedAt || page.createdAt
+      });
+    }
+
+    function showMissing(title, message) {
+      document.title = `${title} - MatchPulse`;
+      els.title.textContent = title;
+      els.summary.textContent = message;
+      els.status.textContent = "Page";
+      els.body.innerHTML = `<div class="status-box"><strong>${escapeHtml(title)}</strong>${escapeHtml(message)}</div>`;
+    }
+
+    function findLocalPage(slugValue) {
+      return readLocalPages().find((page) => page.slug === slugValue && (page.status || "Draft") === "Published");
+    }
+
+    function readLocalPages() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
+        return Array.isArray(saved.pages) ? saved.pages : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function renderBody(value) {
+      const lines = String(value || "").replace(/\r\n/g, "\n").split("\n");
+      const blocks = [];
+      let listItems = [];
+
+      const flushList = () => {
+        if (!listItems.length) return;
+        blocks.push(`<ul>${listItems.map((item) => `<li>${formatInline(item)}</li>`).join("")}</ul>`);
+        listItems = [];
+      };
+
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          flushList();
+          return;
+        }
+
+        if (trimmed.startsWith("- ")) {
+          listItems.push(trimmed.slice(2));
+          return;
+        }
+
+        flushList();
+
+        if (trimmed.startsWith("## ")) {
+          blocks.push(`<h2>${formatInline(trimmed.slice(3))}</h2>`);
+        } else if (trimmed.startsWith("> ")) {
+          blocks.push(`<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`);
+        } else {
+          blocks.push(`<p>${formatInline(trimmed)}</p>`);
+        }
+      });
+
+      flushList();
+
+      return blocks.length
+        ? blocks.join("")
+        : `<div class="status-box"><strong>No page body</strong>The page body has not been added yet.</div>`;
+    }
+
+    function pageExcerpt(body) {
+      const text = String(body || "").replace(/\s+/g, " ").trim();
+      return text.length > 150 ? `${text.slice(0, 147)}...` : text || "MatchPulse site page.";
+    }
+
+    function setMetaContent(attribute, name, content) {
+      if (!content) return;
+      let meta = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attribute, name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    }
+
+    function setCanonicalUrl(url) {
+      if (!url) return;
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", url);
+    }
+
+    function setJsonLd(data) {
+      const script = document.getElementById("pageSchema") || document.createElement("script");
+      script.id = "pageSchema";
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(data);
+      if (!script.parentElement) document.head.appendChild(script);
+    }
+
+    function formatInline(value) {
+      return escapeHtml(value)
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>

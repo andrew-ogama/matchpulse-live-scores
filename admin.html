@@ -2499,6 +2499,7 @@
         state.backend.user = session.user || null;
         state.backend.checked = true;
         if (state.backend.authenticated) {
+          await loadBackendSettings();
           await loadBackendArticles();
         } else {
           renderBackendStatus();
@@ -2550,6 +2551,7 @@
         state.backend.authenticated = true;
         state.backend.user = result.user || null;
         els.backendPassword.value = "";
+        await loadBackendSettings();
         await loadBackendArticles();
         showToast("Backend connected.");
       } catch (error) {
@@ -2581,6 +2583,35 @@
         saveSettings();
       }
       render();
+    }
+
+    async function loadBackendSettings() {
+      if (!state.backend.available || !state.backend.authenticated) {
+        return;
+      }
+
+      const result = await backendRequest("settings.php", { method: "GET" });
+      if (result.seo && typeof result.seo === "object") {
+        state.seo = { ...DEFAULT_SEO, ...result.seo };
+        populateSeoForm();
+      }
+      if (Array.isArray(result.pages)) {
+        state.pages = result.pages;
+      }
+      saveSettings();
+      render();
+    }
+
+    async function saveBackendSettings(payload) {
+      if (!state.backend.authenticated) {
+        return false;
+      }
+
+      await backendRequest("settings.php", {
+        method: "POST",
+        body: payload
+      });
+      return true;
     }
 
     function renderBackendStatus() {
@@ -3048,11 +3079,16 @@
       renderSeoControls({ ...DEFAULT_SEO, ...collectSeoForm() });
     }
 
-    function saveSeoSettings() {
+    async function saveSeoSettings() {
       state.seo = { ...DEFAULT_SEO, ...collectSeoForm() };
       saveSettings();
       render();
-      showToast("SEO and social settings saved.");
+      try {
+        const savedToBackend = await saveBackendSettings({ seo: state.seo });
+        showToast(savedToBackend ? "SEO and social settings saved to MySQL." : "SEO and social settings saved locally.");
+      } catch (error) {
+        showToast(`${error.message} Saved locally for now.`);
+      }
     }
 
     function updateSeoPreview(seo) {
@@ -3073,7 +3109,7 @@
       savePage();
     }
 
-    function savePage() {
+    async function savePage() {
       const title = els.pageTitle.value.trim();
       const body = els.pageBody.value.trim();
       const slug = slugify(els.pageSlug.value || title);
@@ -3107,7 +3143,17 @@
       clearPageForm();
       saveSettings();
       render();
-      showToast(wasEditing ? "Page updated." : "Page saved.");
+      try {
+        const savedToBackend = await saveBackendSettings({ pages: state.pages });
+        if (savedToBackend) {
+          showToast(wasEditing ? "Page updated in MySQL." : "Page saved to MySQL.");
+          return;
+        }
+      } catch (error) {
+        showToast(`${error.message} Saved locally for now.`);
+        return;
+      }
+      showToast(wasEditing ? "Page updated locally." : "Page saved locally.");
     }
 
     function clearPageForm() {
@@ -3149,14 +3195,19 @@
       showToast("Page loaded for editing.");
     }
 
-    function deletePage(id) {
+    async function deletePage(id) {
       state.pages = state.pages.filter((page) => String(page.id) !== String(id));
       if (state.editingPageId === id) {
         clearPageForm();
       }
       saveSettings();
       render();
-      showToast("Page deleted.");
+      try {
+        const savedToBackend = await saveBackendSettings({ pages: state.pages });
+        showToast(savedToBackend ? "Page deleted from MySQL." : "Page deleted locally.");
+      } catch (error) {
+        showToast(`${error.message} Page deleted locally for now.`);
+      }
     }
 
     function updatePagePreview() {
