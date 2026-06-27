@@ -1238,6 +1238,68 @@
       gap: 3px;
     }
 
+    .youtube-composer {
+      display: grid;
+      gap: 10px;
+    }
+
+    .youtube-action-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .helper-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1.45;
+    }
+
+    .youtube-embed-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .youtube-embed-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+      background: var(--surface-soft);
+    }
+
+    .youtube-embed-card strong {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .youtube-embed-card span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .youtube-embed-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .youtube-embed-actions .button {
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
     .preview-phone {
       width: min(100%, 340px);
       margin: 0 auto;
@@ -1525,6 +1587,10 @@
         flex: 1;
       }
 
+      .youtube-action-row {
+        grid-template-columns: 1fr;
+      }
+
       .article-title-input {
         font-size: 20px;
       }
@@ -1615,6 +1681,7 @@
         <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
         <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
         <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+        <button class="nav-button" type="button" data-jump="#youtube"><span>Y</span>YouTube</button>
         <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
         <button class="nav-button" type="button" data-jump="#seo"><span>S</span>SEO</button>
         <button class="nav-button" type="button" data-jump="#pages"><span>P</span>Pages</button>
@@ -1631,6 +1698,7 @@
           <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
           <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
           <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+          <button class="nav-button" type="button" data-jump="#youtube"><span>Y</span>YouTube</button>
           <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
           <button class="nav-button" type="button" data-jump="#seo"><span>S</span>SEO</button>
           <button class="nav-button" type="button" data-jump="#pages"><span>P</span>Pages</button>
@@ -2165,6 +2233,44 @@
               </div>
             </section>
 
+            <section class="panel section" id="youtube">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Official YouTube</h3>
+                  <p>Add rights-holder YouTube live links for match cards.</p>
+                </div>
+                <span class="pill" id="youtubeEmbedCount">0 active</span>
+              </div>
+              <div class="panel-body">
+                <div class="youtube-composer">
+                  <div class="field">
+                    <label for="youtubeTitle">Stream title</label>
+                    <input class="input" id="youtubeTitle" type="text" maxlength="120" placeholder="SportyTV official live stream" />
+                  </div>
+                  <div class="field">
+                    <label for="youtubeMatchKey">Match keywords</label>
+                    <input class="input" id="youtubeMatchKey" type="text" maxlength="160" placeholder="France Norway" />
+                  </div>
+                  <div class="field">
+                    <label for="youtubeUrl">YouTube live/video URL</label>
+                    <input class="input" id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+                  </div>
+                  <div class="youtube-action-row">
+                    <div class="field">
+                      <label for="youtubeStatus">Status</label>
+                      <select class="select" id="youtubeStatus">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <button class="button primary" id="saveYoutubeEmbedBtn" type="button">Save YouTube Embed</button>
+                  </div>
+                  <p class="helper-note">Use official YouTube links only. Click a match in Live Match Desk to fill the team keywords.</p>
+                  <div class="youtube-embed-list" id="youtubeEmbedList"></div>
+                </div>
+              </div>
+            </section>
+
             <section class="panel section" id="preview">
               <div class="panel-head">
                 <div class="panel-title">
@@ -2242,6 +2348,7 @@
       updates: savedSettings.updates || [],
       articles: savedSettings.articles || [],
       pages: savedSettings.pages || [],
+      youtubeEmbeds: normalizeYoutubeEmbeds(savedSettings.youtubeEmbeds || []),
       seo: { ...DEFAULT_SEO, ...(savedSettings.seo || {}) },
       visibleLeagues: savedSettings.visibleLeagues || Object.fromEntries(LEAGUES.map((league) => [league.id, true])),
       search: "",
@@ -2289,6 +2396,13 @@
       updateText: document.getElementById("updateText"),
       publishUpdateBtn: document.getElementById("publishUpdateBtn"),
       updateList: document.getElementById("updateList"),
+      youtubeTitle: document.getElementById("youtubeTitle"),
+      youtubeMatchKey: document.getElementById("youtubeMatchKey"),
+      youtubeUrl: document.getElementById("youtubeUrl"),
+      youtubeStatus: document.getElementById("youtubeStatus"),
+      youtubeEmbedCount: document.getElementById("youtubeEmbedCount"),
+      youtubeEmbedList: document.getElementById("youtubeEmbedList"),
+      saveYoutubeEmbedBtn: document.getElementById("saveYoutubeEmbedBtn"),
       articleCategory: document.getElementById("articleCategory"),
       articleTitle: document.getElementById("articleTitle"),
       articleSummary: document.getElementById("articleSummary"),
@@ -2402,6 +2516,8 @@
         renderMatches();
       });
 
+      els.matchList.addEventListener("click", fillYoutubeMatchFromRow);
+
       document.querySelectorAll("[data-jump]").forEach((button) => {
         button.addEventListener("click", () => {
           setActiveNav(button.dataset.jump);
@@ -2435,6 +2551,8 @@
       });
 
       els.publishUpdateBtn.addEventListener("click", publishUpdate);
+      els.saveYoutubeEmbedBtn.addEventListener("click", saveYoutubeEmbed);
+      els.youtubeEmbedList.addEventListener("click", handleYoutubeEmbedAction);
       els.saveArticleBtn.addEventListener("click", saveArticle);
       els.publishArticleBtn.addEventListener("click", publishArticle);
       els.clearArticleBtn.addEventListener("click", clearArticleForm);
@@ -2597,6 +2715,9 @@
       }
       if (Array.isArray(result.pages)) {
         state.pages = result.pages;
+      }
+      if (Array.isArray(result.youtubeEmbeds)) {
+        state.youtubeEmbeds = normalizeYoutubeEmbeds(result.youtubeEmbeds);
       }
       saveSettings();
       render();
@@ -2770,6 +2891,7 @@
       renderLeagues();
       renderTeams();
       renderUpdates();
+      renderYoutubeEmbeds();
       renderBackendStatus();
       renderSeo();
       renderPages();
@@ -2796,16 +2918,20 @@
         return;
       }
 
-      els.matchList.innerHTML = events.map((event) => `
-        <button class="match-row" type="button">
+      els.matchList.innerHTML = events.map((event) => {
+        const matchKey = `${event.home.name} ${event.away.name}`;
+        const matchTitle = `${event.home.name} vs ${event.away.name}`;
+        return `
+        <button class="match-row" type="button" data-youtube-match-key="${escapeAttr(matchKey)}" data-youtube-match-title="${escapeAttr(matchTitle)}">
           <div class="match-main">
             <strong>${escapeHtml(event.home.name)} vs ${escapeHtml(event.away.name)}</strong>
-            <span>${escapeHtml(event.leagueName)} - ${escapeHtml(matchTimeText(event))}</span>
+            <span>${escapeHtml(event.leagueName)} - ${escapeHtml(matchTimeText(event))} - click to set YouTube keywords</span>
           </div>
           <div class="score-box">${escapeHtml(event.home.score)}-${escapeHtml(event.away.score)}</div>
           <span class="pill ${escapeAttr(bucket(event))}">${escapeHtml(statusLabel(event))}</span>
         </button>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function renderWatched() {
@@ -2872,6 +2998,118 @@
           <span>${escapeHtml(relativeMatchTime(item.createdAt))}</span>
         </div>
       `).join("");
+    }
+
+    function renderYoutubeEmbeds() {
+      const activeCount = state.youtubeEmbeds.filter((embed) => embed.status === "Active").length;
+      els.youtubeEmbedCount.textContent = `${activeCount} active`;
+
+      if (!state.youtubeEmbeds.length) {
+        els.youtubeEmbedList.innerHTML = `<div class="empty">No official YouTube embeds saved yet.</div>`;
+        return;
+      }
+
+      els.youtubeEmbedList.innerHTML = state.youtubeEmbeds.map((embed) => `
+        <div class="youtube-embed-card">
+          <strong>${escapeHtml(embed.title)}</strong>
+          <span>${escapeHtml(embed.matchKey || "No match keywords")} - ${escapeHtml(embed.status)} - ${escapeHtml(embed.videoId)}</span>
+          <div class="youtube-embed-actions">
+            <a class="button" href="${escapeAttr(embed.url)}" target="_blank" rel="noreferrer">Open YouTube</a>
+            <button class="button" type="button" data-youtube-toggle="${escapeAttr(embed.id)}">${embed.status === "Active" ? "Deactivate" : "Activate"}</button>
+            <button class="button" type="button" data-youtube-delete="${escapeAttr(embed.id)}">Remove</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function fillYoutubeMatchFromRow(event) {
+      const row = event.target.closest("[data-youtube-match-key]");
+      if (!row) return;
+
+      const matchKey = row.dataset.youtubeMatchKey || "";
+      const matchTitle = row.dataset.youtubeMatchTitle || "Official YouTube stream";
+      els.youtubeMatchKey.value = matchKey;
+      if (!els.youtubeTitle.value.trim()) {
+        els.youtubeTitle.value = `${matchTitle} official YouTube`;
+      }
+      document.querySelector("#youtube")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      showToast("Match keywords added. Paste the official YouTube link next.");
+    }
+
+    async function saveYoutubeEmbed() {
+      const parsed = youtubeEmbedFromUrl(els.youtubeUrl.value);
+      if (!parsed) {
+        showToast("Paste a valid YouTube video or live URL.");
+        return;
+      }
+
+      const matchKey = els.youtubeMatchKey.value.trim();
+      if (!matchKey) {
+        showToast("Add match keywords, for example France Norway.");
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const embed = {
+        id: `youtube-${Date.now()}`,
+        title: els.youtubeTitle.value.trim() || "Official YouTube stream",
+        matchKey,
+        url: parsed.url,
+        videoId: parsed.videoId,
+        embedUrl: parsed.embedUrl,
+        status: els.youtubeStatus.value === "Inactive" ? "Inactive" : "Active",
+        createdAt: now,
+        updatedAt: now
+      };
+
+      state.youtubeEmbeds = normalizeYoutubeEmbeds([embed, ...state.youtubeEmbeds]).slice(0, 20);
+      clearYoutubeEmbedForm();
+      saveSettings();
+      renderYoutubeEmbeds();
+
+      try {
+        const savedToBackend = await saveBackendSettings({ youtubeEmbeds: state.youtubeEmbeds });
+        showToast(savedToBackend ? "Official YouTube embed saved to MySQL." : "Official YouTube embed saved locally.");
+      } catch (error) {
+        showToast("Saved locally. Backend save needs login.");
+      }
+    }
+
+    async function handleYoutubeEmbedAction(event) {
+      const toggle = event.target.closest("[data-youtube-toggle]");
+      const remove = event.target.closest("[data-youtube-delete]");
+      if (!toggle && !remove) return;
+
+      if (toggle) {
+        const id = toggle.dataset.youtubeToggle;
+        state.youtubeEmbeds = state.youtubeEmbeds.map((embed) => (
+          embed.id === id
+            ? { ...embed, status: embed.status === "Active" ? "Inactive" : "Active", updatedAt: new Date().toISOString() }
+            : embed
+        ));
+      }
+
+      if (remove) {
+        const id = remove.dataset.youtubeDelete;
+        state.youtubeEmbeds = state.youtubeEmbeds.filter((embed) => embed.id !== id);
+      }
+
+      saveSettings();
+      renderYoutubeEmbeds();
+
+      try {
+        const savedToBackend = await saveBackendSettings({ youtubeEmbeds: state.youtubeEmbeds });
+        showToast(savedToBackend ? "Official YouTube list updated in MySQL." : "Official YouTube list updated locally.");
+      } catch (error) {
+        showToast("Updated locally. Backend save needs login.");
+      }
+    }
+
+    function clearYoutubeEmbedForm() {
+      els.youtubeTitle.value = "";
+      els.youtubeMatchKey.value = "";
+      els.youtubeUrl.value = "";
+      els.youtubeStatus.value = "Active";
     }
 
     function renderArticles() {
@@ -3418,6 +3656,7 @@
         updates: state.updates,
         articles: state.articles,
         pages: state.pages,
+        youtubeEmbeds: state.youtubeEmbeds,
         seo: state.seo,
         visibleLeagues: state.visibleLeagues
       };
@@ -3567,6 +3806,66 @@
 
     function pageReadTime(body) {
       return articleReadTime(body || "");
+    }
+
+    function normalizeYoutubeEmbeds(items) {
+      if (!Array.isArray(items)) return [];
+
+      return items.map((item) => {
+        const parsed = youtubeEmbedFromUrl(item?.url || item?.embedUrl || "");
+        const videoId = parsed?.videoId || validYoutubeVideoId(item?.videoId || "");
+        if (!videoId) return null;
+
+        return {
+          id: String(item?.id || `youtube-${videoId}`),
+          title: String(item?.title || "Official YouTube stream").trim() || "Official YouTube stream",
+          matchKey: String(item?.matchKey || "").trim(),
+          url: parsed?.url || `https://www.youtube.com/watch?v=${videoId}`,
+          videoId,
+          embedUrl: `https://www.youtube.com/embed/${videoId}`,
+          status: item?.status === "Inactive" ? "Inactive" : "Active",
+          createdAt: item?.createdAt || new Date().toISOString(),
+          updatedAt: item?.updatedAt || new Date().toISOString()
+        };
+      }).filter(Boolean);
+    }
+
+    function youtubeEmbedFromUrl(value) {
+      const videoId = youtubeVideoIdFromUrl(value);
+      if (!videoId) return null;
+
+      return {
+        videoId,
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`
+      };
+    }
+
+    function youtubeVideoIdFromUrl(value) {
+      const raw = String(value || "").trim();
+      if (validYoutubeVideoId(raw)) return raw;
+      if (!raw) return "";
+
+      try {
+        const url = new URL(raw, window.location.href);
+        const host = url.hostname.toLowerCase().replace(/^www\./, "");
+        const allowedHosts = ["youtube.com", "m.youtube.com", "youtu.be", "youtube-nocookie.com"];
+        if (!allowedHosts.includes(host)) return "";
+
+        const parts = url.pathname.split("/").filter(Boolean);
+        if (host === "youtu.be") return validYoutubeVideoId(parts[0] || "");
+        if (url.pathname === "/watch") return validYoutubeVideoId(url.searchParams.get("v") || "");
+        if (["live", "embed", "shorts"].includes(parts[0])) return validYoutubeVideoId(parts[1] || "");
+      } catch (error) {
+        return "";
+      }
+
+      return "";
+    }
+
+    function validYoutubeVideoId(value) {
+      const candidate = String(value || "").trim();
+      return /^[A-Za-z0-9_-]{11}$/.test(candidate) ? candidate : "";
     }
 
     function seoScore(seo) {
@@ -3740,6 +4039,7 @@
         updates: state.updates,
         articles: state.articles,
         pages: state.pages,
+        youtubeEmbeds: state.youtubeEmbeds,
         seo: state.seo
       }));
     }
