@@ -272,31 +272,23 @@
     }
 
     .sticky-jumpbar {
-      position: fixed;
-      top: 72px;
-      left: 0;
-      z-index: 38;
       width: 100%;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(227, 232, 240, 0.9);
-      background: rgba(244, 246, 250, 0.94);
-      box-shadow: 0 14px 30px rgba(21, 27, 40, 0.08);
-      backdrop-filter: blur(14px);
-      transform: translateY(-100%);
+      max-height: 0;
+      overflow: hidden;
       opacity: 0;
       pointer-events: none;
-      transition: transform 180ms ease, opacity 180ms ease;
+      transition: max-height 180ms ease, opacity 180ms ease;
     }
 
     .sticky-jumpbar .nav-card {
       width: min(100% - 32px, 1180px);
-      margin: 0 auto;
+      margin: 0 auto 10px;
       display: flex;
       gap: 8px;
       overflow-x: auto;
       padding: 8px;
-      border-color: rgba(227, 232, 240, 0.94);
-      background: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.13);
       box-shadow: none;
       scrollbar-width: none;
     }
@@ -309,11 +301,27 @@
       width: auto;
       min-height: 38px;
       flex: 0 0 auto;
+      color: rgba(255, 255, 255, 0.9);
       white-space: nowrap;
     }
 
+    .sticky-jumpbar .nav-button span:first-child {
+      color: var(--red);
+      background: #fff;
+    }
+
+    .sticky-jumpbar .nav-button.is-active {
+      color: var(--red);
+      background: #fff;
+    }
+
+    .sticky-jumpbar .nav-button.is-active span:first-child {
+      color: #fff;
+      background: var(--red);
+    }
+
     .admin-app.nav-is-sticky .sticky-jumpbar {
-      transform: translateY(0);
+      max-height: 64px;
       opacity: 1;
       pointer-events: auto;
     }
@@ -1270,11 +1278,6 @@
         min-height: 64px;
       }
 
-      .sticky-jumpbar {
-        top: 64px;
-        padding: 6px 0;
-      }
-
       .sticky-jumpbar .nav-card {
         width: min(100% - 20px, 460px);
         min-width: 0;
@@ -1416,20 +1419,19 @@
           <button class="button primary" id="refreshBtn" type="button">Refresh</button>
         </div>
       </div>
+      <nav class="sticky-jumpbar" aria-label="Sticky admin navigation">
+        <div class="nav-card">
+          <button class="nav-button is-active" type="button" data-jump="#overview"><span>O</span>Overview</button>
+          <button class="nav-button" type="button" data-jump="#matches"><span>M</span>Matches</button>
+          <button class="nav-button" type="button" data-jump="#watched"><span>W</span>Watched</button>
+          <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
+          <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
+          <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
+          <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
+          <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
+        </div>
+      </nav>
     </header>
-
-    <nav class="sticky-jumpbar" aria-label="Sticky admin navigation">
-      <div class="nav-card">
-        <button class="nav-button is-active" type="button" data-jump="#overview"><span>O</span>Overview</button>
-        <button class="nav-button" type="button" data-jump="#matches"><span>M</span>Matches</button>
-        <button class="nav-button" type="button" data-jump="#watched"><span>W</span>Watched</button>
-        <button class="nav-button" type="button" data-jump="#leagues"><span>L</span>Leagues</button>
-        <button class="nav-button" type="button" data-jump="#teams"><span>T</span>Teams</button>
-        <button class="nav-button" type="button" data-jump="#updates"><span>U</span>Updates</button>
-        <button class="nav-button" type="button" data-jump="#backend"><span>B</span>Backend</button>
-        <button class="nav-button" type="button" data-jump="#articles"><span>A</span>Articles</button>
-      </div>
-    </nav>
 
     <div class="admin-shell">
       <aside class="sidebar" aria-label="Admin navigation">
