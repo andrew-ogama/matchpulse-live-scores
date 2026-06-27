@@ -5634,7 +5634,7 @@
             <span class="dot" id="connectionDot"></span>
             <span id="connectionText">Connecting to live feed</span>
           </div>
-          <button class="button primary" id="refreshButton" type="button"><span class="button-icon" aria-hidden="true">&#8635;</span><span>Refresh</span></button>
+          <button class="button primary" id="refreshButton" type="button"><span class="button-icon" aria-hidden="true">&#8635;</span><span>Update Scores</span></button>
         </div>
       </div>
     </header>
@@ -5693,7 +5693,7 @@
             </div>
             <div class="connection">
               <span class="dot online"></span>
-              <span id="refreshCountdown">Live pulse in 30s</span>
+              <span id="refreshCountdown">Manual updates</span>
               <span class="pulse-track" aria-hidden="true"><span id="countdownFill"></span></span>
             </div>
           </div>
@@ -5771,14 +5771,14 @@
 
           <div class="panel">
             <div class="panel-head">
-              <h3>Live Feed</h3>
-              <span class="status-pill live">On</span>
+              <h3>Feed Updates</h3>
+              <span class="status-pill">Manual</span>
             </div>
             <div class="panel-body">
               <div class="live-card">
                 <div>
-                  <span>Next live pulse</span>
-                  <strong id="sideCountdown">30s</strong>
+                  <span>Update mode</span>
+                  <strong id="sideCountdown">Manual</strong>
                 </div>
                 <div class="pulse-track wide" aria-hidden="true"><span id="sideCountdownFill"></span></div>
               </div>
@@ -5798,7 +5798,6 @@
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
     const BACKEND_API_ROOT = new URL("api/", window.location.href).toString();
-    const REFRESH_MS = 30000;
     const SCORE_TIMEOUT_MS = 4500;
     const DETAIL_TIMEOUT_MS = 3200;
     const RECENT_WATCHED_DAYS = 3;
@@ -5830,7 +5829,6 @@
       events: [],
       loading: false,
       usingFallback: false,
-      nextRefreshAt: Date.now() + REFRESH_MS,
       snapshots: new Map(),
       updatedIds: new Set(),
       updateLog: [],
@@ -5946,7 +5944,7 @@
         });
       });
 
-      els.refreshButton.addEventListener("click", () => loadScores({ reason: "Manual refresh" }));
+      els.refreshButton.addEventListener("click", () => loadScores({ reason: "Manual update" }));
     }
 
     function enableHorizontalScroll() {
@@ -6016,7 +6014,6 @@
         state.usingFallback = false;
         state.events = events;
         state.updatedIds = detectChanges(events);
-        state.nextRefreshAt = Date.now() + REFRESH_MS;
         state.loading = false;
         setConnection("online", "Live feed connected");
         addUpdate("Live sync", `${reason} - ${events.length} games loaded.`, "info");
@@ -6030,7 +6027,6 @@
         state.watchedEvents = [];
         state.watchedLoading = false;
         state.watchedRequestId += 1;
-        state.nextRefreshAt = Date.now() + REFRESH_MS;
         state.loading = false;
         setConnection("offline", "Live feed unavailable");
         addUpdate("Feed error", "Showing sample data until the scoreboard feed responds.", "error");
@@ -6661,7 +6657,6 @@
       state.events = fallbackEvents();
       state.updatedIds = new Set();
       state.usingFallback = false;
-      state.nextRefreshAt = Date.now() + REFRESH_MS;
       render();
     }
 
@@ -7173,7 +7168,7 @@
             <div class="update-bar"></div>
             <div class="update-text">
               <strong>Waiting for updates</strong>
-              <span>Score changes and feed refreshes will appear here.</span>
+              <span>Score changes and manual feed updates will appear here.</span>
             </div>
           </div>
         `;
@@ -7242,16 +7237,12 @@
     function tick() {
       renderCountdown();
       updateMatchTimers();
-      if (!state.loading && Date.now() >= state.nextRefreshAt) {
-        loadScores({ reason: "Live pulse" });
-      }
     }
 
     function renderCountdown() {
-      const remaining = Math.max(0, Math.ceil((state.nextRefreshAt - Date.now()) / 1000));
-      const percent = state.loading ? 100 : Math.max(0, Math.min(100, (remaining / (REFRESH_MS / 1000)) * 100));
-      els.refreshCountdown.textContent = state.loading ? "Live feed updating" : `Live pulse in ${remaining}s`;
-      if (els.sideCountdown) els.sideCountdown.textContent = state.loading ? "Live" : `${remaining}s`;
+      const percent = state.loading ? 100 : 0;
+      els.refreshCountdown.textContent = state.loading ? "Updating scores" : "Manual updates";
+      if (els.sideCountdown) els.sideCountdown.textContent = state.loading ? "Updating" : "Manual";
       if (els.countdownFill) els.countdownFill.style.width = `${percent}%`;
       if (els.sideCountdownFill) els.sideCountdownFill.style.width = `${percent}%`;
     }
