@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MatchPulse - Live Game Updates</title>
-  <meta name="description" content="Live football scores, match status, lineups, coaches, players, stadia, fixtures, venues, and broadcast details." />
+  <title>MatchPulse - Live Football Scores, Fixtures and Match News</title>
+  <meta name="description" content="Live football scores, fixtures, final results, lineups, players, coaches, stadia, match stats, and football news from MatchPulse." />
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#ffffff" />
-  <meta property="og:title" content="MatchPulse - Live Football Scores" />
-  <meta property="og:description" content="Compact live football scores with leagues, teams, lineups, coaches, players, and stadia." />
+  <link rel="canonical" href="https://andrew-ogama.github.io/matchpulse-live-scores/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="MatchPulse" />
+  <meta property="og:title" content="MatchPulse - Live Football Scores, Fixtures and Match News" />
+  <meta property="og:description" content="Live football scores, fixtures, final results, lineups, players, coaches, stadia, match stats, and football news from MatchPulse." />
   <meta property="og:url" content="https://andrew-ogama.github.io/matchpulse-live-scores/" />
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MatchPulse - Live Football Scores, Fixtures and Match News" />
+  <meta name="twitter:description" content="Live football scores, fixtures, final results, lineups, players, coaches, stadia, match stats, and football news from MatchPulse." />
+  <script type="application/ld+json" id="siteSchema">{"@context":"https://schema.org","@type":"WebSite","name":"MatchPulse","url":"https://andrew-ogama.github.io/matchpulse-live-scores/","description":"Live football scores, fixtures, final results, lineups, players, coaches, stadia, match stats, and football news from MatchPulse."}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -5797,6 +5804,12 @@
     const RECENT_WATCHED_DAYS = 3;
     const RECENT_WATCHED_LIMIT = 6;
     const RECENT_TOP_LEAGUE_LIMIT = 5;
+    const DEFAULT_SITE_SEO = {
+      title: "MatchPulse - Live Football Scores, Fixtures and Match News",
+      description: "Live football scores, fixtures, final results, lineups, players, coaches, stadia, match stats, and football news from MatchPulse.",
+      canonicalUrl: "https://andrew-ogama.github.io/matchpulse-live-scores/",
+      schemaType: "WebSite"
+    };
     const LEAGUES = [
       { id: "all-soccer", label: "Top soccer live", sport: "soccer", slug: "all", sourceName: "Top soccer", all: true },
       { id: "world-cup", label: "FIFA World Cup 2026", sport: "soccer", slug: "fifa.world", sourceName: "FIFA World Cup" },
@@ -5866,6 +5879,7 @@
     init();
 
     function init() {
+      applySavedSeoSettings();
       els.leagueSelect.innerHTML = LEAGUES.map((league) => (
         `<option value="${league.id}">${escapeHtml(league.label)}</option>`
       )).join("");
@@ -7034,6 +7048,72 @@
       `;
     }
 
+    function applySavedSeoSettings() {
+      const saved = readLocalAdminSettings();
+      const seo = { ...DEFAULT_SITE_SEO, ...(saved.seo || {}) };
+      const title = seo.title || DEFAULT_SITE_SEO.title;
+      const description = seo.description || DEFAULT_SITE_SEO.description;
+      const socialTitle = seo.socialTitle || title;
+      const socialDescription = seo.socialDescription || description;
+      const canonicalUrl = seo.canonicalUrl || DEFAULT_SITE_SEO.canonicalUrl || window.location.href;
+      const socialLinks = ["facebook", "instagram", "x", "tiktok", "youtube", "whatsapp"]
+        .map((key) => seo[key])
+        .filter(Boolean);
+
+      document.title = title;
+      setMetaContent("name", "description", description);
+      setMetaContent("name", "robots", `${seo.robotsIndex || "index"}, ${seo.robotsFollow || "follow"}`);
+      setMetaContent("property", "og:title", socialTitle);
+      setMetaContent("property", "og:description", socialDescription);
+      setMetaContent("property", "og:url", canonicalUrl);
+      setMetaContent("name", "twitter:title", socialTitle);
+      setMetaContent("name", "twitter:description", socialDescription);
+      if (seo.shareImage) {
+        setMetaContent("property", "og:image", seo.shareImage);
+        setMetaContent("name", "twitter:image", seo.shareImage);
+      }
+      setCanonicalUrl(canonicalUrl);
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": seo.schemaType || DEFAULT_SITE_SEO.schemaType,
+        name: "MatchPulse",
+        url: canonicalUrl,
+        description
+      };
+      if (socialLinks.length) schema.sameAs = socialLinks;
+      setJsonLd(schema);
+    }
+
+    function setMetaContent(attribute, name, content) {
+      if (!content) return;
+      let meta = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attribute, name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    }
+
+    function setCanonicalUrl(url) {
+      if (!url) return;
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", url);
+    }
+
+    function setJsonLd(data) {
+      const script = document.getElementById("siteSchema") || document.createElement("script");
+      script.id = "siteSchema";
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(data);
+      if (!script.parentElement) document.head.appendChild(script);
+    }
+
     function localPreviewArticles() {
       const articles = readLocalAdminArticles()
         .filter((article) => article && article.title && article.body);
@@ -7050,11 +7130,15 @@
     }
 
     function readLocalAdminArticles() {
+      const saved = readLocalAdminSettings();
+      return Array.isArray(saved.articles) ? saved.articles : [];
+    }
+
+    function readLocalAdminSettings() {
       try {
-        const saved = JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
-        return Array.isArray(saved.articles) ? saved.articles : [];
+        return JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
       } catch (error) {
-        return [];
+        return {};
       }
     }
 

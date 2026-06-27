@@ -991,6 +991,10 @@
       align-items: start;
     }
 
+    .settings-grid .wide {
+      grid-column: 1 / -1;
+    }
+
     .seo-preview-card {
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -1018,6 +1022,117 @@
       color: #4d5156;
       font-size: 13px;
       font-weight: 700;
+    }
+
+    .seo-score-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface);
+    }
+
+    .seo-score-row strong {
+      width: 68px;
+      height: 68px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--red);
+      background: var(--red-soft);
+      font-family: var(--display-font);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .seo-score-row.medium strong {
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .seo-score-row.good strong {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .seo-score-row span {
+      display: block;
+      font-weight: 900;
+    }
+
+    .seo-score-row p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .seo-analysis-list {
+      max-height: 380px;
+      padding-right: 4px;
+      display: grid;
+      gap: 8px;
+      overflow: auto;
+    }
+
+    .seo-test {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      background: var(--surface-soft);
+    }
+
+    .seo-test span:first-child {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--red);
+      background: var(--red-soft);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .seo-test.warn span:first-child {
+      color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .seo-test.pass span:first-child {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .seo-test strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .seo-test em {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .seo-advanced-grid,
+    .social-settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
     .page-body {
@@ -1389,6 +1504,11 @@
         grid-template-columns: 1fr;
       }
 
+      .seo-advanced-grid,
+      .social-settings-grid {
+        grid-template-columns: 1fr;
+      }
+
       .backend-grid {
         grid-template-columns: 1fr;
       }
@@ -1654,8 +1774,12 @@
           <div class="panel-body">
             <div class="settings-grid">
               <div class="wp-box">
-                <div class="wp-box-head">Search Preview</div>
+                <div class="wp-box-head">Search Setup</div>
                 <div class="wp-box-body">
+                  <div class="field">
+                    <label for="seoFocusKeyphrase">Focus keyphrase</label>
+                    <input class="input" id="seoFocusKeyphrase" type="text" maxlength="80" placeholder="live football scores" />
+                  </div>
                   <div class="field">
                     <label for="seoTitle">SEO title</label>
                     <input class="input" id="seoTitle" type="text" maxlength="70" placeholder="MatchPulse - Live Football Scores" />
@@ -1668,10 +1792,6 @@
                     <label for="seoKeywords">Keywords</label>
                     <input class="input" id="seoKeywords" type="text" placeholder="live scores, football fixtures, world cup results" />
                   </div>
-                  <div class="field">
-                    <label for="seoShareImage">Social share image URL</label>
-                    <input class="input" id="seoShareImage" type="url" placeholder="https://example.com/share-image.jpg" />
-                  </div>
                   <div class="seo-preview-card" aria-label="SEO preview">
                     <span id="seoPreviewUrl">matchpulse.example.com</span>
                     <strong id="seoPreviewTitle">MatchPulse - Live Football Scores</strong>
@@ -1682,31 +1802,95 @@
               </div>
 
               <div class="wp-box">
-                <div class="wp-box-head">Social Profiles</div>
+                <div class="wp-box-head">SEO Analysis</div>
                 <div class="wp-box-body">
-                  <div class="field">
-                    <label for="socialFacebook">Facebook</label>
-                    <input class="input" id="socialFacebook" type="url" placeholder="https://facebook.com/yourpage" />
+                  <div class="seo-score-row" id="seoScoreRow">
+                    <strong id="seoScoreLabel">0/100</strong>
+                    <div>
+                      <span id="seoScoreText">Needs setup</span>
+                      <p>Improve the checklist before publishing important pages and articles.</p>
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="socialInstagram">Instagram</label>
-                    <input class="input" id="socialInstagram" type="url" placeholder="https://instagram.com/yourpage" />
+                  <div class="seo-analysis-list" id="seoAnalysisList"></div>
+                  <div class="seo-advanced-grid">
+                    <div class="field">
+                      <label for="seoSchemaType">Schema type</label>
+                      <select class="select" id="seoSchemaType">
+                        <option value="WebSite">Website</option>
+                        <option value="NewsArticle">News article</option>
+                        <option value="SportsEvent">Sports event</option>
+                        <option value="Article">Article</option>
+                        <option value="WebPage">Web page</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="seoCanonicalUrl">Canonical URL</label>
+                      <input class="input" id="seoCanonicalUrl" type="url" placeholder="https://yourdomain.com/" />
+                    </div>
+                    <div class="field">
+                      <label for="seoRobotsIndex">Search visibility</label>
+                      <select class="select" id="seoRobotsIndex">
+                        <option value="index">Index this site</option>
+                        <option value="noindex">Hide from search</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="seoRobotsFollow">Link handling</label>
+                      <select class="select" id="seoRobotsFollow">
+                        <option value="follow">Follow links</option>
+                        <option value="nofollow">Do not follow links</option>
+                      </select>
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="socialX">X / Twitter</label>
-                    <input class="input" id="socialX" type="url" placeholder="https://x.com/yourpage" />
-                  </div>
-                  <div class="field">
-                    <label for="socialTiktok">TikTok</label>
-                    <input class="input" id="socialTiktok" type="url" placeholder="https://tiktok.com/@yourpage" />
-                  </div>
-                  <div class="field">
-                    <label for="socialYoutube">YouTube</label>
-                    <input class="input" id="socialYoutube" type="url" placeholder="https://youtube.com/@yourpage" />
-                  </div>
-                  <div class="field">
-                    <label for="socialWhatsapp">WhatsApp channel</label>
-                    <input class="input" id="socialWhatsapp" type="url" placeholder="https://whatsapp.com/channel/..." />
+                </div>
+              </div>
+
+              <div class="wp-box wide">
+                <div class="wp-box-head">Social Preview & Profiles</div>
+                <div class="wp-box-body">
+                  <div class="social-settings-grid">
+                    <div class="field">
+                      <label for="seoSocialTitle">Social title</label>
+                      <input class="input" id="seoSocialTitle" type="text" maxlength="70" placeholder="MatchPulse live football centre" />
+                    </div>
+                    <div class="field">
+                      <label for="seoShareImage">Social share image URL</label>
+                      <input class="input" id="seoShareImage" type="url" placeholder="https://example.com/share-image.jpg" />
+                    </div>
+                    <div class="field">
+                      <label for="seoSocialDescription">Social description</label>
+                      <textarea class="textarea" id="seoSocialDescription" maxlength="200" placeholder="Fast live scores, fixtures, results, lineups, and match stories."></textarea>
+                    </div>
+                    <div class="seo-preview-card" aria-label="Social preview">
+                      <span id="seoSocialPreviewUrl">Social card preview</span>
+                      <strong id="seoSocialPreviewTitle">MatchPulse - Live Football Scores</strong>
+                      <p id="seoSocialPreviewDescription">Live football scores, fixtures, results, lineups, stadia and match articles.</p>
+                    </div>
+                    <div class="field">
+                      <label for="socialFacebook">Facebook</label>
+                      <input class="input" id="socialFacebook" type="url" placeholder="https://facebook.com/yourpage" />
+                    </div>
+                    <div class="field">
+                      <label for="socialInstagram">Instagram</label>
+                      <input class="input" id="socialInstagram" type="url" placeholder="https://instagram.com/yourpage" />
+                    </div>
+                    <div class="field">
+                      <label for="socialX">X / Twitter</label>
+                      <input class="input" id="socialX" type="url" placeholder="https://x.com/yourpage" />
+                    </div>
+                    <div class="field">
+                      <label for="socialTiktok">TikTok</label>
+                      <input class="input" id="socialTiktok" type="url" placeholder="https://tiktok.com/@yourpage" />
+                    </div>
+                    <div class="field">
+                      <label for="socialYoutube">YouTube</label>
+                      <input class="input" id="socialYoutube" type="url" placeholder="https://youtube.com/@yourpage" />
+                    </div>
+                    <div class="field">
+                      <label for="socialWhatsapp">WhatsApp channel</label>
+                      <input class="input" id="socialWhatsapp" type="url" placeholder="https://whatsapp.com/channel/..." />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2030,10 +2214,17 @@
     ];
 
     const DEFAULT_SEO = {
+      focusKeyphrase: "live football scores",
       title: "MatchPulse - Live Football Scores",
       description: "Live football scores, fixtures, results, lineups, stadia and match articles.",
       keywords: "live football scores, football fixtures, world cup results, match reports",
       shareImage: "",
+      socialTitle: "",
+      socialDescription: "",
+      schemaType: "WebSite",
+      canonicalUrl: "",
+      robotsIndex: "index",
+      robotsFollow: "follow",
       facebook: "",
       instagram: "",
       x: "",
@@ -2127,19 +2318,33 @@
       backendUser: document.getElementById("backendUser"),
       seoStatus: document.getElementById("seoStatus"),
       socialCount: document.getElementById("socialCount"),
+      seoFocusKeyphrase: document.getElementById("seoFocusKeyphrase"),
       seoTitle: document.getElementById("seoTitle"),
       seoDescription: document.getElementById("seoDescription"),
       seoKeywords: document.getElementById("seoKeywords"),
       seoShareImage: document.getElementById("seoShareImage"),
+      seoSocialTitle: document.getElementById("seoSocialTitle"),
+      seoSocialDescription: document.getElementById("seoSocialDescription"),
+      seoSchemaType: document.getElementById("seoSchemaType"),
+      seoCanonicalUrl: document.getElementById("seoCanonicalUrl"),
+      seoRobotsIndex: document.getElementById("seoRobotsIndex"),
+      seoRobotsFollow: document.getElementById("seoRobotsFollow"),
       socialFacebook: document.getElementById("socialFacebook"),
       socialInstagram: document.getElementById("socialInstagram"),
       socialX: document.getElementById("socialX"),
       socialTiktok: document.getElementById("socialTiktok"),
       socialYoutube: document.getElementById("socialYoutube"),
       socialWhatsapp: document.getElementById("socialWhatsapp"),
+      seoScoreRow: document.getElementById("seoScoreRow"),
+      seoScoreLabel: document.getElementById("seoScoreLabel"),
+      seoScoreText: document.getElementById("seoScoreText"),
+      seoAnalysisList: document.getElementById("seoAnalysisList"),
       seoPreviewUrl: document.getElementById("seoPreviewUrl"),
       seoPreviewTitle: document.getElementById("seoPreviewTitle"),
       seoPreviewDescription: document.getElementById("seoPreviewDescription"),
+      seoSocialPreviewUrl: document.getElementById("seoSocialPreviewUrl"),
+      seoSocialPreviewTitle: document.getElementById("seoSocialPreviewTitle"),
+      seoSocialPreviewDescription: document.getElementById("seoSocialPreviewDescription"),
       saveSeoBtn: document.getElementById("saveSeoBtn"),
       pageTitle: document.getElementById("pageTitle"),
       pageSlug: document.getElementById("pageSlug"),
@@ -2243,10 +2448,17 @@
       els.backendLogoutBtn.addEventListener("click", logoutBackend);
       els.saveSeoBtn.addEventListener("click", saveSeoSettings);
       [
+        els.seoFocusKeyphrase,
         els.seoTitle,
         els.seoDescription,
         els.seoKeywords,
         els.seoShareImage,
+        els.seoSocialTitle,
+        els.seoSocialDescription,
+        els.seoSchemaType,
+        els.seoCanonicalUrl,
+        els.seoRobotsIndex,
+        els.seoRobotsFollow,
         els.socialFacebook,
         els.socialInstagram,
         els.socialX,
@@ -2254,7 +2466,8 @@
         els.socialYoutube,
         els.socialWhatsapp
       ].forEach((input) => {
-        input.addEventListener("input", () => updateSeoPreview(collectSeoForm()));
+        const eventName = input.tagName === "SELECT" ? "change" : "input";
+        input.addEventListener(eventName, previewSeoDraft);
       });
       els.clearPageBtn.addEventListener("click", clearPageForm);
       els.savePageBtn.addEventListener("click", () => savePage());
@@ -2663,12 +2876,32 @@
     }
 
     function renderSeo() {
-      const score = seoScore(state.seo);
-      const socials = socialCount(state.seo);
-      els.seoStatus.textContent = score >= 80 ? "SEO Ready" : score >= 50 ? "SEO Started" : "Needs Setup";
-      els.seoStatus.className = `pill ${score >= 80 ? "final" : score >= 50 ? "upcoming" : ""}`;
+      renderSeoControls(state.seo);
+    }
+
+    function renderSeoControls(seo) {
+      const analysis = seoAnalysisItems(seo);
+      const score = scoreFromSeoItems(analysis);
+      const status = seoStateLabel(score);
+      const socials = socialCount(seo);
+
+      els.seoStat.textContent = `${score}%`;
+      els.seoStatus.textContent = status.label;
+      els.seoStatus.className = `pill ${status.pillClass}`;
       els.socialCount.textContent = `${socials} social${socials === 1 ? "" : "s"}`;
-      updateSeoPreview(state.seo);
+      els.seoScoreLabel.textContent = `${score}/100`;
+      els.seoScoreText.textContent = status.detail;
+      els.seoScoreRow.className = `seo-score-row ${status.scoreClass}`;
+      els.seoAnalysisList.innerHTML = analysis.map((item) => `
+        <div class="seo-test ${escapeAttr(item.state)}">
+          <span>${escapeHtml(seoTestMark(item.state))}</span>
+          <div>
+            <strong>${escapeHtml(item.group)}: ${escapeHtml(item.label)}</strong>
+            <em>${escapeHtml(item.detail)}</em>
+          </div>
+        </div>
+      `).join("");
+      updateSeoPreview(seo);
     }
 
     function renderPages() {
@@ -2769,25 +3002,39 @@
     }
 
     function populateSeoForm() {
+      els.seoFocusKeyphrase.value = state.seo.focusKeyphrase || "";
       els.seoTitle.value = state.seo.title || "";
       els.seoDescription.value = state.seo.description || "";
       els.seoKeywords.value = state.seo.keywords || "";
       els.seoShareImage.value = state.seo.shareImage || "";
+      els.seoSocialTitle.value = state.seo.socialTitle || "";
+      els.seoSocialDescription.value = state.seo.socialDescription || "";
+      els.seoSchemaType.value = state.seo.schemaType || DEFAULT_SEO.schemaType;
+      els.seoCanonicalUrl.value = state.seo.canonicalUrl || "";
+      els.seoRobotsIndex.value = state.seo.robotsIndex || DEFAULT_SEO.robotsIndex;
+      els.seoRobotsFollow.value = state.seo.robotsFollow || DEFAULT_SEO.robotsFollow;
       els.socialFacebook.value = state.seo.facebook || "";
       els.socialInstagram.value = state.seo.instagram || "";
       els.socialX.value = state.seo.x || "";
       els.socialTiktok.value = state.seo.tiktok || "";
       els.socialYoutube.value = state.seo.youtube || "";
       els.socialWhatsapp.value = state.seo.whatsapp || "";
-      updateSeoPreview(state.seo);
+      renderSeoControls(state.seo);
     }
 
     function collectSeoForm() {
       return {
+        focusKeyphrase: els.seoFocusKeyphrase.value.trim(),
         title: els.seoTitle.value.trim(),
         description: els.seoDescription.value.trim(),
         keywords: els.seoKeywords.value.trim(),
         shareImage: els.seoShareImage.value.trim(),
+        socialTitle: els.seoSocialTitle.value.trim(),
+        socialDescription: els.seoSocialDescription.value.trim(),
+        schemaType: els.seoSchemaType.value,
+        canonicalUrl: els.seoCanonicalUrl.value.trim(),
+        robotsIndex: els.seoRobotsIndex.value,
+        robotsFollow: els.seoRobotsFollow.value,
         facebook: els.socialFacebook.value.trim(),
         instagram: els.socialInstagram.value.trim(),
         x: els.socialX.value.trim(),
@@ -2795,6 +3042,10 @@
         youtube: els.socialYoutube.value.trim(),
         whatsapp: els.socialWhatsapp.value.trim()
       };
+    }
+
+    function previewSeoDraft() {
+      renderSeoControls({ ...DEFAULT_SEO, ...collectSeoForm() });
     }
 
     function saveSeoSettings() {
@@ -2805,9 +3056,15 @@
     }
 
     function updateSeoPreview(seo) {
-      els.seoPreviewUrl.textContent = location.hostname || "matchpulse.example.com";
+      const previewUrl = seo.canonicalUrl || location.hostname || "matchpulse.example.com";
+      const socialTitle = seo.socialTitle || seo.title || DEFAULT_SEO.title;
+      const socialDescription = seo.socialDescription || seo.description || DEFAULT_SEO.description;
+      els.seoPreviewUrl.textContent = previewUrl;
       els.seoPreviewTitle.textContent = seo.title || DEFAULT_SEO.title;
       els.seoPreviewDescription.textContent = seo.description || DEFAULT_SEO.description;
+      els.seoSocialPreviewUrl.textContent = seo.shareImage ? "Image ready for Facebook, X, and WhatsApp" : "Add a share image for stronger social cards";
+      els.seoSocialPreviewTitle.textContent = socialTitle;
+      els.seoSocialPreviewDescription.textContent = socialDescription;
     }
 
     function publishPage() {
@@ -3262,14 +3519,144 @@
     }
 
     function seoScore(seo) {
-      const checks = [
-        seo.title && seo.title.length >= 20 && seo.title.length <= 70,
-        seo.description && seo.description.length >= 70 && seo.description.length <= 170,
-        seo.keywords && seo.keywords.split(",").filter((item) => item.trim()).length >= 3,
-        seo.shareImage,
-        socialCount(seo) >= 2
+      return scoreFromSeoItems(seoAnalysisItems(seo));
+    }
+
+    function seoAnalysisItems(seo) {
+      const title = String(seo.title || "");
+      const description = String(seo.description || "");
+      const focus = String(seo.focusKeyphrase || "").trim();
+      const focusLower = focus.toLowerCase();
+      const titleLower = title.toLowerCase();
+      const descriptionLower = description.toLowerCase();
+      const keywords = String(seo.keywords || "").split(",").map((item) => item.trim()).filter(Boolean);
+      const canonical = String(seo.canonicalUrl || "").trim();
+      const shareImage = String(seo.shareImage || "").trim();
+      const socialTitle = String(seo.socialTitle || "").trim();
+      const socialDescription = String(seo.socialDescription || "").trim();
+      const robotsIndex = seo.robotsIndex || DEFAULT_SEO.robotsIndex;
+      const robotsFollow = seo.robotsFollow || DEFAULT_SEO.robotsFollow;
+
+      return [
+        {
+          group: "Basic SEO",
+          label: "Focus keyphrase",
+          state: focus ? "pass" : "fail",
+          detail: focus ? `"${focus}" is the phrase this site is targeting.` : "Add the main phrase people should search for."
+        },
+        {
+          group: "Basic SEO",
+          label: "Keyphrase in SEO title",
+          state: focus && titleLower.includes(focusLower) ? "pass" : focus ? "warn" : "fail",
+          detail: focus && titleLower.includes(focusLower) ? "The title clearly targets the keyphrase." : "Put the focus keyphrase naturally in the SEO title."
+        },
+        {
+          group: "Basic SEO",
+          label: "Keyphrase in meta description",
+          state: focus && descriptionLower.includes(focusLower) ? "pass" : focus ? "warn" : "fail",
+          detail: focus && descriptionLower.includes(focusLower) ? "The description reinforces the keyphrase." : "Mention the focus keyphrase in the meta description."
+        },
+        {
+          group: "Snippet",
+          label: "SEO title length",
+          state: lengthState(title.length, 45, 60, 20, 70),
+          detail: title ? `${title.length} characters. Aim for 45-60 characters.` : "Add a search title."
+        },
+        {
+          group: "Snippet",
+          label: "Meta description length",
+          state: lengthState(description.length, 120, 160, 70, 170),
+          detail: description ? `${description.length} characters. Aim for 120-160 characters.` : "Add a search description."
+        },
+        {
+          group: "Keywords",
+          label: "Topic coverage",
+          state: keywords.length >= 3 ? "pass" : keywords.length ? "warn" : "fail",
+          detail: keywords.length >= 3 ? `${keywords.length} keyword ideas saved.` : "Add at least 3 comma-separated topic ideas."
+        },
+        {
+          group: "Social",
+          label: "Social title and description",
+          state: socialTitle && socialDescription ? "pass" : title && description ? "warn" : "fail",
+          detail: socialTitle && socialDescription ? "Social platforms have custom card text." : "Add custom social text or the search title and description will be reused."
+        },
+        {
+          group: "Social",
+          label: "Share image",
+          state: shareImage ? "pass" : "warn",
+          detail: shareImage ? "A share image is ready for link previews." : "Add a strong image URL for Facebook, X, WhatsApp, and LinkedIn previews."
+        },
+        {
+          group: "Social",
+          label: "Profile links",
+          state: socialCount(seo) >= 2 ? "pass" : socialCount(seo) ? "warn" : "fail",
+          detail: socialCount(seo) >= 2 ? `${socialCount(seo)} social profiles connected.` : "Add at least 2 social profiles for trust and sharing."
+        },
+        {
+          group: "Advanced",
+          label: "Schema type",
+          state: seo.schemaType ? "pass" : "warn",
+          detail: seo.schemaType ? `${schemaLabel(seo.schemaType)} selected for structured data planning.` : "Choose a schema type for the page."
+        },
+        {
+          group: "Advanced",
+          label: "Canonical URL",
+          state: canonical ? (isFullUrl(canonical) ? "pass" : "warn") : "warn",
+          detail: canonical ? (isFullUrl(canonical) ? "Canonical URL is set." : "Use a full https:// URL when the domain is ready.") : "Add the final domain URL when the site is connected."
+        },
+        {
+          group: "Advanced",
+          label: "Robots settings",
+          state: robotsIndex === "index" && robotsFollow === "follow" ? "pass" : "warn",
+          detail: robotsIndex === "index" && robotsFollow === "follow" ? "Search engines can index the site and follow links." : "Noindex or nofollow can reduce search visibility."
+        }
       ];
-      return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+    }
+
+    function scoreFromSeoItems(items) {
+      const points = items.reduce((total, item) => {
+        if (item.state === "pass") return total + 10;
+        if (item.state === "warn") return total + 4;
+        return total;
+      }, 0);
+      return Math.round((points / (items.length * 10)) * 100);
+    }
+
+    function lengthState(length, goodMin, goodMax, okMin, okMax) {
+      if (length >= goodMin && length <= goodMax) return "pass";
+      if (length >= okMin && length <= okMax) return "warn";
+      return "fail";
+    }
+
+    function seoStateLabel(score) {
+      if (score >= 81) {
+        return { label: "SEO Ready", detail: "Strong setup for search and socials", pillClass: "final", scoreClass: "good" };
+      }
+      if (score >= 51) {
+        return { label: "SEO Started", detail: "Good start, improve the warning items", pillClass: "upcoming", scoreClass: "medium" };
+      }
+      return { label: "Needs Setup", detail: "Fix the key basics before publishing", pillClass: "live", scoreClass: "" };
+    }
+
+    function seoTestMark(state) {
+      if (state === "pass") return "OK";
+      if (state === "warn") return "!";
+      return "Fix";
+    }
+
+    function schemaLabel(value) {
+      return String(value || "Website")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .replace("Web Site", "Website");
+    }
+
+    function isFullUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch (error) {
+        return false;
+      }
     }
 
     function socialCount(seo) {

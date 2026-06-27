@@ -5,7 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MatchPulse Article</title>
   <meta name="description" content="Read MatchPulse football news, match reports, and live score updates." />
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#ff3d52" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="MatchPulse" />
+  <meta property="og:title" content="MatchPulse Article" />
+  <meta property="og:description" content="Read MatchPulse football news, match reports, and live score updates." />
+  <meta property="og:url" content="https://andrew-ogama.github.io/matchpulse-live-scores/article.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MatchPulse Article" />
+  <meta name="twitter:description" content="Read MatchPulse football news, match reports, and live score updates." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -436,18 +445,90 @@
     }
 
     function renderArticle(article) {
-      document.title = `${article.title || "MatchPulse Article"} - MatchPulse`;
-      els.title.textContent = article.title || "Untitled article";
-      els.summary.textContent = article.summary || articleExcerpt(article.body);
+      const title = article.title || "MatchPulse Article";
+      const description = article.summary || articleExcerpt(article.body);
+      document.title = `${title} - MatchPulse`;
+      els.title.textContent = title;
+      els.summary.textContent = description;
       els.category.textContent = article.localPreview ? "Local Preview" : article.category || "News";
       els.published.textContent = article.localPreview ? "Saved locally" : formatDate(article.publishedAt || article.updatedAt || article.createdAt);
       els.tags.textContent = article.tags || "MatchPulse";
       els.body.innerHTML = renderBody(article.body || article.summary || "");
+      setArticleSeo(article, title, description);
 
       if (article.featuredImage) {
         els.hero.classList.add("has-image");
         els.hero.style.backgroundImage = `linear-gradient(180deg, rgba(13, 18, 28, 0.2), rgba(13, 18, 28, 0.74)), url("${escapeCssUrl(article.featuredImage)}")`;
       }
+    }
+
+    function setArticleSeo(article, title, description) {
+      const saved = readLocalAdminSettings();
+      const seo = saved.seo || {};
+      const url = new URL(window.location.href).toString();
+      const image = article.featuredImage || seo.shareImage || "";
+
+      setMetaContent("name", "description", description);
+      setMetaContent("name", "robots", `${seo.robotsIndex || "index"}, ${seo.robotsFollow || "follow"}`);
+      setMetaContent("property", "og:title", `${title} - MatchPulse`);
+      setMetaContent("property", "og:description", description);
+      setMetaContent("property", "og:url", url);
+      setMetaContent("name", "twitter:title", `${title} - MatchPulse`);
+      setMetaContent("name", "twitter:description", description);
+      if (image) {
+        setMetaContent("property", "og:image", image);
+        setMetaContent("name", "twitter:image", image);
+      }
+      setCanonicalUrl(url);
+      setJsonLd({
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        headline: title,
+        description,
+        url,
+        image: image ? [image] : undefined,
+        datePublished: article.publishedAt || article.createdAt || article.updatedAt,
+        dateModified: article.updatedAt || article.publishedAt || article.createdAt,
+        author: {
+          "@type": "Organization",
+          name: "MatchPulse"
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "MatchPulse"
+        }
+      });
+    }
+
+    function setMetaContent(attribute, name, content) {
+      if (!content) return;
+      let meta = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(attribute, name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    }
+
+    function setCanonicalUrl(url) {
+      if (!url) return;
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", url);
+    }
+
+    function setJsonLd(data) {
+      const cleaned = Object.fromEntries(Object.entries(data).filter((entry) => entry[1] !== undefined && entry[1] !== ""));
+      const script = document.getElementById("articleSchema") || document.createElement("script");
+      script.id = "articleSchema";
+      script.type = "application/ld+json";
+      script.textContent = JSON.stringify(cleaned);
+      if (!script.parentElement) document.head.appendChild(script);
     }
 
     function showMissing(title, message) {
@@ -519,11 +600,15 @@
     }
 
     function readLocalAdminArticles() {
+      const saved = readLocalAdminSettings();
+      return Array.isArray(saved.articles) ? saved.articles : [];
+    }
+
+    function readLocalAdminSettings() {
       try {
-        const saved = JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
-        return Array.isArray(saved.articles) ? saved.articles : [];
+        return JSON.parse(localStorage.getItem("matchpulse-admin") || "{}");
       } catch (error) {
-        return [];
+        return {};
       }
     }
 
