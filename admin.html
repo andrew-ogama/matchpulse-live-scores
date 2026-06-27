@@ -2242,6 +2242,7 @@
       updates: savedSettings.updates || [],
       articles: savedSettings.articles || [],
       pages: savedSettings.pages || [],
+      streams: savedSettings.streams || [],
       seo: { ...DEFAULT_SEO, ...(savedSettings.seo || {}) },
       visibleLeagues: savedSettings.visibleLeagues || Object.fromEntries(LEAGUES.map((league) => [league.id, true])),
       search: "",
@@ -2597,6 +2598,9 @@
       }
       if (Array.isArray(result.pages)) {
         state.pages = result.pages;
+      }
+      if (Array.isArray(result.streams)) {
+        state.streams = result.streams;
       }
       saveSettings();
       render();
@@ -3418,6 +3422,7 @@
         updates: state.updates,
         articles: state.articles,
         pages: state.pages,
+        streams: state.streams,
         seo: state.seo,
         visibleLeagues: state.visibleLeagues
       };
@@ -3740,6 +3745,7 @@
         updates: state.updates,
         articles: state.articles,
         pages: state.pages,
+        streams: state.streams,
         seo: state.seo
       }));
     }

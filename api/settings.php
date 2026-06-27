@@ -4,16 +4,24 @@ require __DIR__ . '/bootstrap.php';
 
 $pdo = db();
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$allowedKeys = ['seo', 'pages'];
+$allowedKeys = ['seo', 'pages', 'streams'];
 
 if ($method === 'GET') {
     $settings = read_site_settings($pdo, $allowedKeys);
     $user = current_user();
     $pages = is_array($settings['pages'] ?? null) ? $settings['pages'] : [];
+    $streams = is_array($settings['streams'] ?? null) ? $settings['streams'] : [];
 
     if (!$user) {
         $pages = array_values(array_filter($pages, static function ($page): bool {
             return is_array($page) && ($page['status'] ?? 'Draft') === 'Published';
+        }));
+        $streams = array_values(array_filter($streams, static function ($stream): bool {
+            if (!is_array($stream)) {
+                return false;
+            }
+            $status = strtolower((string)($stream['status'] ?? 'Scheduled'));
+            return $status !== 'hidden' && $status !== 'ended';
         }));
     }
 
@@ -21,6 +29,7 @@ if ($method === 'GET') {
         'ok' => true,
         'seo' => is_array($settings['seo'] ?? null) ? $settings['seo'] : null,
         'pages' => $pages,
+        'streams' => $streams,
     ]);
 }
 
@@ -44,6 +53,13 @@ if (array_key_exists('pages', $data)) {
         json_response(['ok' => false, 'error' => 'Pages must be a list.'], 422);
     }
     $saved['pages'] = sanitize_pages($data['pages']);
+}
+
+if (array_key_exists('streams', $data)) {
+    if (!is_array($data['streams'])) {
+        json_response(['ok' => false, 'error' => 'Streams must be a list.'], 422);
+    }
+    $saved['streams'] = sanitize_streams($data['streams']);
 }
 
 if (!$saved) {
@@ -161,4 +177,45 @@ function sanitize_pages(array $pages): array
     }
 
     return array_slice($clean, 0, 50);
+}
+
+function sanitize_streams(array $streams): array
+{
+    $clean = [];
+    $allowedStatuses = ['Scheduled', 'Live', 'Ended', 'Hidden'];
+
+    foreach ($streams as $stream) {
+        if (!is_array($stream)) {
+            continue;
+        }
+
+        $url = trim((string)($stream['embedUrl'] ?? $stream['playbackUrl'] ?? $stream['url'] ?? ''));
+        $eventId = trim((string)($stream['eventId'] ?? ''));
+        $home = trim((string)($stream['home'] ?? ''));
+        $away = trim((string)($stream['away'] ?? ''));
+        if ($url === '' && $eventId === '' && ($home === '' || $away === '')) {
+            continue;
+        }
+
+        $status = trim((string)($stream['status'] ?? 'Scheduled'));
+        if (!in_array($status, $allowedStatuses, true)) {
+            $status = 'Scheduled';
+        }
+
+        $clean[] = [
+            'id' => trim((string)($stream['id'] ?? ('stream-' . uniqid()))),
+            'eventId' => $eventId,
+            'leagueId' => trim((string)($stream['leagueId'] ?? '')),
+            'home' => substr($home, 0, 120),
+            'away' => substr($away, 0, 120),
+            'title' => substr(trim((string)($stream['title'] ?? '')), 0, 190),
+            'provider' => substr(trim((string)($stream['provider'] ?? '')), 0, 80),
+            'embedUrl' => trim((string)($stream['embedUrl'] ?? '')),
+            'playbackUrl' => trim((string)($stream['playbackUrl'] ?? $stream['url'] ?? '')),
+            'status' => $status,
+            'updatedAt' => date('c'),
+        ];
+    }
+
+    return array_slice($clean, 0, 100);
 }

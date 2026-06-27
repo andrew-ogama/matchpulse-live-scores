@@ -658,6 +658,210 @@
       font-weight: 900;
     }
 
+    .stream-cta {
+      margin: 0 18px 14px;
+      border: 1px solid rgba(84, 135, 255, 0.26);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background:
+        linear-gradient(135deg, rgba(84, 135, 255, 0.14), rgba(242, 59, 85, 0.08)),
+        #0d1218;
+    }
+
+    .stream-cta span {
+      display: block;
+      color: var(--blue-2);
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .stream-cta strong {
+      display: block;
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .stream-cta small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .stream-button,
+    .stream-close {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue), var(--red));
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .stream-button {
+      min-height: 38px;
+      flex: 0 0 auto;
+      padding: 0 13px;
+      white-space: nowrap;
+    }
+
+    .stream-modal[hidden] {
+      display: none;
+    }
+
+    .stream-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .stream-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 8, 13, 0.78);
+      backdrop-filter: blur(10px);
+    }
+
+    .stream-panel {
+      width: min(980px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: #0d1218;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
+      overflow: auto;
+    }
+
+    .stream-panel-head {
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stream-panel-head span {
+      display: block;
+      color: var(--blue-2);
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .stream-panel-head h3 {
+      margin: 3px 0 0;
+      color: #ffffff;
+      font-family: var(--display-font);
+      font-size: clamp(20px, 4vw, 30px);
+      line-height: 1.05;
+    }
+
+    .stream-panel-head p {
+      margin: 4px 0 0;
+      color: #aeb7c5;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .stream-close {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+
+    .stream-player {
+      aspect-ratio: 16 / 9;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(84, 135, 255, 0.18), transparent 34%),
+        radial-gradient(circle at 70% 30%, rgba(242, 59, 85, 0.16), transparent 30%),
+        #080b10;
+    }
+
+    .stream-player iframe,
+    .stream-player video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .stream-placeholder {
+      min-height: 100%;
+      padding: clamp(22px, 6vw, 54px);
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .stream-placeholder div {
+      max-width: 520px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .stream-placeholder span {
+      color: var(--blue-2);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .stream-placeholder strong {
+      color: #ffffff;
+      font-family: var(--display-font);
+      font-size: clamp(24px, 5vw, 42px);
+      line-height: 1;
+    }
+
+    .stream-placeholder p {
+      margin: 0;
+      color: #aeb7c5;
+      font-weight: 750;
+    }
+
+    .stream-meta {
+      padding: 14px 16px 16px;
+      color: #aeb7c5;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    @media (max-width: 640px) {
+      .stream-cta {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .stream-button {
+        width: 100%;
+      }
+
+      .stream-modal {
+        padding: 10px;
+      }
+
+      .stream-panel {
+        max-height: calc(100vh - 20px);
+      }
+    }
+
     .side-panel {
       display: grid;
       gap: 14px;
@@ -5828,6 +6032,22 @@
     <a href="#articleList"><span aria-hidden="true">&#9635;</span>News</a>
   </nav>
 
+  <div class="stream-modal" id="streamModal" hidden role="dialog" aria-modal="true" aria-labelledby="streamTitle">
+    <div class="stream-backdrop" data-close-stream></div>
+    <section class="stream-panel">
+      <div class="stream-panel-head">
+        <div>
+          <span id="streamStatus">MatchPulse Stream</span>
+          <h3 id="streamTitle">Watch on MatchPulse</h3>
+          <p id="streamSubtitle">The official stream will play here when connected.</p>
+        </div>
+        <button class="stream-close" type="button" data-close-stream aria-label="Close stream">&times;</button>
+      </div>
+      <div class="stream-player" id="streamPlayer"></div>
+      <div class="stream-meta" id="streamMeta">Use only licensed or official stream sources.</div>
+    </section>
+  </div>
+
   <script>
     const API_ROOT = "https://site.api.espn.com/apis/site/v2/sports";
     const BACKEND_API_ROOT = new URL("api/", window.location.href).toString();
@@ -5872,7 +6092,8 @@
       articles: [],
       articlesLoading: false,
       articlesAvailable: false,
-      pages: []
+      pages: [],
+      streams: []
     };
 
     const els = {
@@ -5907,7 +6128,13 @@
       sideCountdown: document.getElementById("sideCountdown"),
       sideCountdownFill: document.getElementById("sideCountdownFill"),
       connectionDot: document.getElementById("connectionDot"),
-      connectionText: document.getElementById("connectionText")
+      connectionText: document.getElementById("connectionText"),
+      streamModal: document.getElementById("streamModal"),
+      streamStatus: document.getElementById("streamStatus"),
+      streamTitle: document.getElementById("streamTitle"),
+      streamSubtitle: document.getElementById("streamSubtitle"),
+      streamPlayer: document.getElementById("streamPlayer"),
+      streamMeta: document.getElementById("streamMeta")
     };
 
     init();
@@ -5970,6 +6197,22 @@
         state.query = button.dataset.teamQuery.toLowerCase();
         els.searchInput.value = button.dataset.teamQuery;
         render();
+      });
+
+      els.matchGrid.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-open-stream]");
+        if (!button) return;
+        openStreamPlayer(button.dataset.openStream);
+      });
+
+      document.querySelectorAll("[data-close-stream]").forEach((item) => {
+        item.addEventListener("click", closeStreamPlayer);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !els.streamModal.hidden) {
+          closeStreamPlayer();
+        }
       });
 
       document.querySelectorAll(".segment").forEach((button) => {
@@ -6846,6 +7089,9 @@
         state.updatedIds.has(event.id) ? "is-updated" : ""
       ].filter(Boolean).join(" ");
       const watchText = whereToWatchText(event);
+      const stream = findStreamForEvent(event);
+      const streamReady = Boolean(stream && streamPlayableUrl(stream));
+      const streamState = streamStatusText(event, stream);
 
       return `
         <article class="${cardClasses}">
@@ -6893,6 +7139,16 @@
               <strong title="${escapeAttr(event.note || event.statusDetail)}">${escapeHtml(event.note || event.statusDetail)}</strong>
             </div>
           </div>
+          <div class="stream-cta">
+            <div>
+              <span>MatchPulse Stream</span>
+              <strong>${escapeHtml(streamReady ? "Watch inside this website" : "Player ready for official stream")}</strong>
+              <small>${escapeHtml(streamState)}</small>
+            </div>
+            <button class="stream-button" type="button" data-open-stream="${escapeAttr(event.id)}">
+              ${escapeHtml(streamReady && type === "live" ? "Watch Live" : "Open Player")}
+            </button>
+          </div>
           <details class="match-drawer">
             <summary>Stats, scorers, players, stadia and where to watch</summary>
             <div class="match-intel">
@@ -6928,6 +7184,96 @@
           <div class="stadium-badge">WATCH</div>
         </div>
       `;
+    }
+
+    function openStreamPlayer(eventId) {
+      const event = state.events.find((item) => String(item.id) === String(eventId));
+      if (!event) return;
+
+      const stream = findStreamForEvent(event);
+      const streamUrl = streamPlayableUrl(stream);
+      const title = `${event.home.name} vs ${event.away.name}`;
+      const type = bucket(event);
+
+      els.streamTitle.textContent = title;
+      els.streamStatus.textContent = streamUrl && type === "live" ? "Live on MatchPulse" : "MatchPulse Stream";
+      els.streamSubtitle.textContent = streamUrl
+        ? `${event.leagueName} - ${clockText(event)}`
+        : "The official licensed video player will appear here when connected.";
+      els.streamPlayer.innerHTML = streamUrl
+        ? streamPlayerMarkup(streamUrl, stream)
+        : streamPlaceholderMarkup(event);
+      els.streamMeta.textContent = streamUrl
+        ? "You are watching inside MatchPulse. Stream availability depends on the licensed source connected for this match."
+        : "No video source is connected yet. Add a licensed provider stream URL later and visitors will watch here without leaving the site.";
+      els.streamModal.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeStreamPlayer() {
+      els.streamModal.hidden = true;
+      els.streamPlayer.innerHTML = "";
+      document.body.style.overflow = "";
+    }
+
+    function findStreamForEvent(event) {
+      if (!Array.isArray(state.streams) || !state.streams.length) return null;
+      const home = normalizeName(event.home.name);
+      const away = normalizeName(event.away.name);
+
+      return state.streams.find((stream) => {
+        const status = String(stream.status || "Scheduled").toLowerCase();
+        if (status === "hidden" || status === "ended") return false;
+        if (String(stream.eventId || "") && String(stream.eventId) === String(event.id)) return true;
+        const streamHome = normalizeName(stream.home || "");
+        const streamAway = normalizeName(stream.away || "");
+        const sameTeams = streamHome && streamAway && (
+          (streamHome === home && streamAway === away) ||
+          (streamHome === away && streamAway === home)
+        );
+        return sameTeams && (!stream.leagueId || stream.leagueId === event.leagueId);
+      }) || null;
+    }
+
+    function streamPlayableUrl(stream) {
+      if (!stream || typeof stream !== "object") return "";
+      return String(stream.embedUrl || stream.playbackUrl || stream.url || "").trim();
+    }
+
+    function streamStatusText(event, stream) {
+      if (!stream) return "No licensed stream connected yet.";
+      const status = stream.status || (bucket(event) === "live" ? "Live" : "Scheduled");
+      const provider = stream.provider ? ` via ${stream.provider}` : "";
+      return `${status}${provider}. Visitors stay on MatchPulse.`;
+    }
+
+    function streamPlayerMarkup(url, stream) {
+      const safeUrl = escapeAttr(url);
+      if (isVideoStreamUrl(url)) {
+        return `<video controls autoplay playsinline src="${safeUrl}"></video>`;
+      }
+      const title = escapeAttr(stream?.title || "MatchPulse live stream");
+      return `<iframe src="${safeUrl}" title="${title}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+    }
+
+    function streamPlaceholderMarkup(event) {
+      return `
+        <div class="stream-placeholder">
+          <div>
+            <span>Stream Waiting</span>
+            <strong>Official video will play here</strong>
+            <p>${escapeHtml(event.home.name)} vs ${escapeHtml(event.away.name)} can stream inside MatchPulse once a licensed feed is connected.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function isVideoStreamUrl(url) {
+      return /\.(m3u8|mp4|webm|ogg)(\?.*)?$/i.test(String(url || ""));
+    }
+
+    function normalizeName(value) {
+      return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
     }
 
     function stadiumMarkup(event) {
@@ -7107,6 +7453,7 @@
       const saved = readLocalAdminSettings();
       applySeoSettings(saved.seo || {});
       state.pages = localPreviewPages(saved);
+      state.streams = localPreviewStreams(saved);
       renderPageLinks();
     }
 
@@ -7124,6 +7471,10 @@
         if (Array.isArray(payload.pages)) {
           state.pages = payload.pages;
           renderPageLinks();
+        }
+        if (Array.isArray(payload.streams)) {
+          state.streams = payload.streams;
+          render();
         }
       } catch (error) {
         // GitHub Pages cannot run PHP, so local SEO settings remain the fallback.
@@ -7216,6 +7567,14 @@
         .filter((page) => page && page.title && page.body && (page.status || "Draft") === "Published")
         .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
         .slice(0, 6);
+    }
+
+    function localPreviewStreams(saved = readLocalAdminSettings()) {
+      const streams = Array.isArray(saved.streams) ? saved.streams : [];
+      return streams.filter((stream) => {
+        const status = String(stream?.status || "Scheduled").toLowerCase();
+        return stream && status !== "hidden" && status !== "ended";
+      });
     }
 
     function renderPageLinks() {
