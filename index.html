@@ -6276,7 +6276,7 @@
     }
 
     function prioritizeDetailEvents(events) {
-      const rank = { live: 0, final: 1, upcoming: 2 };
+      const rank = { live: 0, upcoming: 1, final: 2 };
       return [...events]
         .filter((event) => event.id && event.leagueSlug)
         .sort((a, b) => {
@@ -7545,7 +7545,7 @@
     }
 
     function sortEvents(a, b) {
-      const rank = { live: 0, final: 1, upcoming: 2 };
+      const rank = { live: 0, upcoming: 1, final: 2 };
       const rankDiff = rank[bucket(a)] - rank[bucket(b)];
       if (rankDiff !== 0) return rankDiff;
       return bucket(a) === "final"
